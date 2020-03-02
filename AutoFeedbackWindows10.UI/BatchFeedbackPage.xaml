@@ -1,0 +1,309 @@
+﻿<Page
+    x:Class="AutoFeedbackWindows10.UI.BatchFeedbackPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:AutoFeedbackWindows10.UI"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Loaded="Page_Loaded"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <MenuFlyout x:Key="flyoutOptions" Placement="Bottom">
+            <MenuFlyoutItem Text="Exclude">
+                <MenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xF13C;" />
+                </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+            <MenuFlyoutItem Text="Feedback individually">
+                <MenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xE77B;" />
+                </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+        </MenuFlyout>
+    </Page.Resources>
+    <Grid>
+        <ScrollViewer x:Name="scrollRoot" ViewChanged="scrollRoot_ViewChanged">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+
+                <Image
+                    Height="250"
+                    Source="/Assets/Images/FPTUBG.jpg"
+                    Stretch="Fill" />
+
+                <Rectangle x:Name="acrylicLayer" Fill="#44000000" />
+
+                <TextBlock
+                    Margin="16,88,0,0"
+                    FontSize="24"
+                    Text="This page allow you to send the same feedback to all teachers"
+                    TextWrapping="Wrap" />
+
+                <Grid
+                    x:Name="grdHeaderAction"
+                    Margin="16,0,0,8"
+                    VerticalAlignment="Bottom">
+                    <Grid.TranslationTransition>
+                        <Vector3Transition Duration="0:0:0.35" />
+                    </Grid.TranslationTransition>
+                    <Grid.OpacityTransition>
+                        <ScalarTransition Duration="0:0:0.25" />
+                    </Grid.OpacityTransition>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <SymbolIcon
+                        Height="36"
+                        Margin="0,0,16,0"
+                        Symbol="Contact" />
+                    <TextBlock
+                        Grid.Column="1"
+                        FontSize="32"
+                        Text="88 teachers will be feedback" />
+
+                    <SplitButton Grid.Column="1" HorizontalAlignment="Right">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <FontIcon
+                                Height="28"
+                                Margin="0,0,16,0"
+                                VerticalAlignment="Center"
+                                Glyph="&#xE724;" />
+                            <TextBlock
+                                Grid.Column="1"
+                                FontSize="28"
+                                Text="Send" />
+                        </Grid>
+                        <SplitButton.Flyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Icon="Save" Text="Save as draft" />
+                            </MenuFlyout>
+                        </SplitButton.Flyout>
+                    </SplitButton>
+                </Grid>
+
+                <Pivot Grid.Row="1">
+                    <PivotItem Header="Forms">
+                        <local:UCSurveyForm />
+                    </PivotItem>
+                    <PivotItem Header="Filters">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
+
+                            <PersonPicture
+                                Grid.RowSpan="2"
+                                Height="120"
+                                Margin="16,0,12,0" />
+                            <Grid
+                                Grid.Column="1"
+                                Margin="4,16,4,12"
+                                VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*" />
+                                    <ColumnDefinition Width="1*" />
+                                </Grid.ColumnDefinitions>
+                                <ComboBox HorizontalAlignment="Stretch" PlaceholderText="Select teacher name ..." />
+                            </Grid>
+
+                            <Grid
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Margin="4,4,4,24"
+                                VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*" />
+                                    <ColumnDefinition Width="1*" />
+                                </Grid.ColumnDefinitions>
+                                <ComboBox HorizontalAlignment="Stretch" PlaceholderText="Select class name ..." />
+                            </Grid>
+
+                            <NavigationViewItemSeparator Grid.Row="2" Grid.ColumnSpan="2" />
+
+                            <StackPanel
+                                Grid.Row="3"
+                                Grid.ColumnSpan="2"
+                                Margin="16,0,0,0">
+                                <NavigationViewItem Icon="AllApps" ToolTipService.ToolTip="Feedback For">
+                                    <ComboBox PlaceholderText="Select teacher type (feedback for)" />
+                                </NavigationViewItem>
+                                <NavigationViewItem ToolTipService.ToolTip="Term &amp; Academic Year">
+                                    <NavigationViewItem.Icon>
+                                        <FontIcon Glyph="&#xEC92;" />
+                                    </NavigationViewItem.Icon>
+                                    <ComboBox PlaceholderText="Select terms" />
+                                </NavigationViewItem>
+                                <NavigationViewItem ToolTipService.ToolTip="Term &amp; Academic Year">
+                                    <NavigationViewItem.Icon>
+                                        <FontIcon Glyph="&#xE8F5;" />
+                                    </NavigationViewItem.Icon>
+                                    <ComboBox PlaceholderText="Select academic year" />
+                                </NavigationViewItem>
+                                <NavigationViewItem Icon="Calendar" ToolTipService.ToolTip="Open Date">
+                                    <ComboBox PlaceholderText="Select open date" />
+                                </NavigationViewItem>
+                            </StackPanel>
+                        </Grid>
+                    </PivotItem>
+                    <PivotItem Header="Teachers">
+                        <StackPanel>
+                            <TextBlock Text="Included teachers:" />
+                            <GridView ItemsSource="{x:Bind Teachers}" SelectionMode="None">
+                                <GridView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Width="350" ContextFlyout="{StaticResource flyoutOptions}">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="auto" />
+                                                <RowDefinition Height="auto" />
+                                                <RowDefinition Height="auto" />
+                                                <RowDefinition Height="auto" />
+                                                <RowDefinition Height="auto" />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto" />
+                                                <ColumnDefinition Width="1*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <PersonPicture
+                                                Grid.RowSpan="2"
+                                                Height="44"
+                                                Margin="16,0,12,0"
+                                                DisplayName="{Binding TeacherName}" />
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                VerticalAlignment="Center"
+                                                FontWeight="Bold"
+                                                Text="{Binding TeacherName}" />
+                                            <TextBlock
+                                                Grid.Row="1"
+                                                Grid.Column="1"
+                                                Foreground="#BBBBBB"
+                                                Text="{Binding ClassName}" />
+
+                                            <DropDownButton
+                                                Grid.Column="1"
+                                                HorizontalAlignment="Right"
+                                                Background="Transparent"
+                                                Content="Options"
+                                                Flyout="{StaticResource flyoutOptions}" />
+
+                                            <NavigationViewItemSeparator Grid.Row="2" Grid.ColumnSpan="2" />
+                                            <StackPanel
+                                                Grid.Row="3"
+                                                Grid.ColumnSpan="2"
+                                                Margin="16,0,0,0">
+                                                <NavigationViewItem
+                                                    Content="{Binding FeedbackFor}"
+                                                    Icon="AllApps"
+                                                    ToolTipService.ToolTip="Feedback For" />
+                                                <NavigationViewItem ToolTipService.ToolTip="Term &amp; Academic Year">
+                                                    <NavigationViewItem.Icon>
+                                                        <FontIcon Glyph="&#xEC92;" />
+                                                    </NavigationViewItem.Icon>
+                                                    <TextBlock>
+                                                        <Run Text="{Binding Term}" />
+                                                        -<Run Foreground="#BBBBBB" Text="{Binding AcademicYear}" />
+                                                    </TextBlock>
+                                                </NavigationViewItem>
+                                                <NavigationViewItem
+                                                    Content="{Binding OpenDate}"
+                                                    Icon="Calendar"
+                                                    ToolTipService.ToolTip="Open Date" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </GridView.ItemTemplate>
+                            </GridView>
+                        </StackPanel>
+                    </PivotItem>
+                </Pivot>
+            </Grid>
+        </ScrollViewer>
+
+
+        <Rectangle
+            x:Name="fadeBlackHeader"
+            Height="{Binding ElementName=headerContent, Path=ActualHeight}"
+            VerticalAlignment="Top">
+            <Rectangle.Fill>
+                <SolidColorBrush Color="Black" />
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <Grid x:Name="headerContent" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="4" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <FontIcon
+                Margin="24"
+                FontSize="48"
+                Glyph="&#xECA5;" />
+            <TextBlock
+                Grid.Column="2"
+                VerticalAlignment="Center"
+                FontSize="48"
+                Text="Batched feedback" />
+            <StackPanel
+                x:Name="clampTeacherCount"
+                Grid.Column="3"
+                Orientation="Horizontal">
+                <FontIcon
+                    Margin="0,0,16,0"
+                    VerticalAlignment="Center"
+                    FontSize="40"
+                    Glyph="&#xE77B;" />
+                <TextBlock
+                    Margin="0,0,16,0"
+                    VerticalAlignment="Center"
+                    FontSize="40"
+                    Text="88" />
+            </StackPanel>
+            <SplitButton
+                x:Name="clampSendButton"
+                Grid.Column="4"
+                HorizontalAlignment="Right">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon
+                        Height="28"
+                        Margin="0,0,16,0"
+                        VerticalAlignment="Center"
+                        Glyph="&#xE724;" />
+                    <TextBlock
+                        Grid.Column="1"
+                        FontSize="28"
+                        Text="Send" />
+                </Grid>
+                <SplitButton.Flyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem Icon="Save" Text="Save as draft" />
+                    </MenuFlyout>
+                </SplitButton.Flyout>
+            </SplitButton>
+        </Grid>
+    </Grid>
+</Page>

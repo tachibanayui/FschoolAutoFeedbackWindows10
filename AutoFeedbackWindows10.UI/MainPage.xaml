@@ -1,0 +1,32 @@
+﻿<Page
+    x:Class="AutoFeedbackWindows10.UI.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:AutoFeedbackWindows10.UI"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Loaded="Page_Loaded"
+    mc:Ignorable="d">
+
+    <NavigationView x:Name="navRoot" ItemInvoked="navRoot_ItemInvoked">
+        <NavigationView.MenuItems>
+            <NavigationViewItem Content="Home" Icon="Home" />
+            <NavigationViewItem Content="Batch Feedback">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xECA5;" />
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem Content="Individual Feedback" Icon="AllApps" />
+        </NavigationView.MenuItems>
+
+        <Frame x:Name="navFrame">
+            <Frame.ContentTransitions>
+                <TransitionCollection>
+                    <NavigationThemeTransition />
+                </TransitionCollection>
+            </Frame.ContentTransitions>
+        </Frame>
+
+    </NavigationView>
+</Page>

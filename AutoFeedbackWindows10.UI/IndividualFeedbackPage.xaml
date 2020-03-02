@@ -1,0 +1,131 @@
+﻿<Page
+    x:Class="AutoFeedbackWindows10.UI.IndividualFeedbackPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:AutoFeedbackWindows10.UI"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Loaded="Page_Loaded"
+    mc:Ignorable="d">
+
+    <Grid>
+        <ScrollViewer x:Name="scrollRoot">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+
+                <Image
+                    Height="250"
+                    Source="/Assets/Images/FPTUBG.jpg"
+                    Stretch="Fill" />
+
+                <Rectangle x:Name="acrylicLayer" Fill="#44000000" />
+
+                <TextBlock
+                    Margin="16,88,0,0"
+                    FontSize="24"
+                    Text="This page allow you to send the same feedback to each teacher simmilar to feedback normally"
+                    TextWrapping="Wrap" />
+
+                <ListView
+                    x:Name="lsvTeachers"
+                    Grid.Row="1"
+                    HorizontalContentAlignment="Stretch"
+                    IsItemClickEnabled="True"
+                    ItemClick="ListView_ItemClick"
+                    ItemsSource="{x:Bind Teachers}">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid x:Name="templateRoot" Margin="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="1*" />
+                                    <ColumnDefinition Width="auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="1*" />
+                                </Grid.RowDefinitions>
+                                <PersonPicture
+                                    x:Name="templatePS"
+                                    Grid.RowSpan="2"
+                                    Height="52"
+                                    Margin="0,0,12,0"
+                                    DisplayName="{Binding TeacherName}" />
+                                <TextBlock Grid.Column="1" VerticalAlignment="Center">
+                                    <Run FontWeight="Bold" Text="{Binding TeacherName}" />
+                                    <Run Foreground="#BBBBBB" Text="{Binding ClassName}" />
+                                </TextBlock>
+
+                                <StackPanel
+                                    Grid.Column="3"
+                                    Orientation="Horizontal"
+                                    ToolTipService.ToolTip="Open Date">
+                                    <FontIcon Margin="0,0,12,0" Glyph="&#xED5A;" />
+                                    <TextBlock Text="{Binding OpenDate}" />
+                                </StackPanel>
+
+                                <StackPanel
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Grid.ColumnSpan="3"
+                                    Margin="0,12,0,0"
+                                    VerticalAlignment="Center"
+                                    Orientation="Horizontal">
+                                    <FontIcon Margin="0,0,12,0" Glyph="&#xE787;" />
+                                    <TextBlock Margin="0,0,28,0">
+                                        <Run Text="{Binding Term}" />
+                                        <Run Text="-" />
+                                        <Run Foreground="#BBBBBB" Text="{Binding AcademicYear}" />
+                                    </TextBlock>
+
+                                    <FontIcon Margin="0,0,12,0" Glyph="&#xE939;" />
+                                    <TextBlock Margin="0,0,28,0">
+                                        <Run Foreground="#BBBBBB" Text="{Binding FeedbackFor}" />
+                                    </TextBlock>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+        </ScrollViewer>
+
+        <Rectangle
+            x:Name="fadeBlackHeader"
+            Height="{Binding ElementName=headerContent, Path=ActualHeight}"
+            VerticalAlignment="Top">
+            <Rectangle.Fill>
+                <SolidColorBrush Color="Black" />
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <Grid x:Name="headerContent" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="8" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <FontIcon
+                Margin="24"
+                FontSize="48"
+                Glyph="&#xE71D;" />
+
+            <TextBlock
+                Grid.Column="2"
+                VerticalAlignment="Center"
+                FontSize="48"
+                Text="Individual Feedback" />
+        </Grid>
+    </Grid>
+</Page>
