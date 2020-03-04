@@ -72,6 +72,7 @@ namespace AutoFeedbackWindows10.UI
         {
             NavigationViewItem item = sender as NavigationViewItem;
             var account = await AccountProvider.GetActiveAccount();
+            await account.UpdateStudentInfo();
             if (account != null)
             {
                 txblDisplayNameFO.Text = account.Name;

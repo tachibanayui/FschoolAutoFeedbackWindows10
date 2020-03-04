@@ -123,6 +123,7 @@
       <DependentUpon>BatchFeedbackPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataProviders\AccountProvider.cs" />
+    <Compile Include="DataProviders\FeedbackEntryProvider.cs" />
     <Compile Include="HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
@@ -141,7 +142,7 @@
     <Compile Include="Models\AccountModel.cs" />
     <Compile Include="Models\AccountStorageModel.cs" />
     <Compile Include="Models\ContributorModel.cs" />
-    <Compile Include="Models\FeedbackTeacher.cs" />
+    <Compile Include="Models\FeedbackTeacherModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UCSavedLogin.xaml.cs">
       <DependentUpon>UCSavedLogin.xaml</DependentUpon>

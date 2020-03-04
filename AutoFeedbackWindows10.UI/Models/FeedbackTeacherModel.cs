@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AutoFeedbackWindows10.UI.Models
 {
-    public class FeedbackTeacher : INotifyPropertyChanged
+    public class FeedbackTeacherModel : INotifyPropertyChanged
     {
         // Feedback info
         public string TeacherName { get; set; }
@@ -16,7 +16,7 @@ namespace AutoFeedbackWindows10.UI.Models
         public string AcademicYear { get; set; }
         public string ClassName { get; set; }
         public string OpenDate { get; set; }
-        public string FeedbackUrl { get; set; }
+        public string ID { get; set; }
 
         // Feedback value
         public List<int> FeedbackChoice { get; set; }

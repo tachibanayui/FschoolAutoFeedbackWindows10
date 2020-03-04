@@ -32,6 +32,10 @@ namespace AutoFeedbackWindows10.UI
     /// </summary>
     public sealed partial class LoginForm : Page
     {
+        // TODO: Implement relogin in main page
+        // we might need to change web view logic to a user control
+        // add saved cookie then navigate to accounts auth server
+
         HttpBaseProtocolFilter httpBase = new HttpBaseProtocolFilter();
         public ObservableCollection<AccountModel> SavedAccounts = new ObservableCollection<AccountModel>();
         public const string GoogleLoginLink = @"https://accounts.google.com/o/oauth2/auth?scope=profile%20email&state=%2Fprofile&redirect_uri=http://fschool.fpt.edu.vn/LoginPage/Login.aspx&response_type=code&client_id=699800698114-ahs58mmqlmscei6tvhdcabidotspimif.apps.googleusercontent.com&approval_prompt=auto&access_type=offline";
@@ -64,7 +68,7 @@ namespace AutoFeedbackWindows10.UI
 
                 // We can kinda *guess* the email address by the student id
                 string email = uriString.Substring(uriString.IndexOf("=") + 1).Replace("#", "") + "@fpt.edu.vn";
-                string name = await GetAccountName(sessionID);
+                string name = await AccountModel.GetAccountName(sessionID);
                 if (!string.IsNullOrEmpty(name))
                 {
                     var createdAccount = await AccountProvider.AddOrUpdateAccountAsync(name, email, sessionID, cookies);
@@ -106,36 +110,6 @@ namespace AutoFeedbackWindows10.UI
             }
         }
 
-        private async Task<string> GetAccountName(string sessionId)
-        {
-            // we will create or own request to avoid loading scripts and image that might cause performance overhead
-            try
-            {
-                HttpWebRequest req = WebRequest.CreateHttp($"{FschoolDomain}/DefaultPage/StudentDefaultPage.aspx");
-                req.CookieContainer = new CookieContainer();
-                req.CookieContainer.Add(new Cookie(SessionIDCookieName, sessionId) { Domain = req.Host });
-                using (var resp = await req.GetResponseAsync())
-                {
-                    using (var stream = resp.GetResponseStream())
-                    {
-                        using (var reader = new StreamReader(stream))
-                        {
-                            string data = reader.ReadToEnd();
-                            HtmlDocument doc = new HtmlDocument();
-                            doc.LoadHtml(data);
-                            return doc.DocumentNode.SelectSingleNode("/html/body/div/header/nav/div/ul/li[2]/ul/li[1]/p")
-                                .InnerText.Replace("\"", "").Trim()
-                                .Split("\r")[0];
-                        }
-                    }
-                }
-            }
-            catch
-            {
-                return string.Empty;
-            }
-        }
-
         private void Github_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("https://github.com/quangaming2929/FschoolAutoFeedbackWindows10");
@@ -161,7 +135,6 @@ namespace AutoFeedbackWindows10.UI
                 webLogin.Navigate(new Uri(GoogleLoginLink));
             }
         }
-
 
 
         private void BackButton_Click(object sender, RoutedEventArgs e)

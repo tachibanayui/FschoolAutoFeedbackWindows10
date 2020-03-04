@@ -27,9 +27,9 @@ namespace AutoFeedbackWindows10.UI
     /// </summary>
     public sealed partial class IndividualFeedbackPage : Page
     {
-        public ObservableCollection<FeedbackTeacher> Teachers { get; set; } = new ObservableCollection<FeedbackTeacher>()
+        public ObservableCollection<FeedbackTeacherModel> Teachers { get; set; } = new ObservableCollection<FeedbackTeacherModel>()
         {
-            new FeedbackTeacher()
+            new FeedbackTeacherModel()
             {
                 AcademicYear = "2019-2020",
                 ClassName = "11A3-11A3 GDQP 11.1",
