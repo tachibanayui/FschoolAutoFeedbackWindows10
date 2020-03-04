@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AutoFeedbackWindows10.UI
 {
-    class ValueEventArgs<T> : EventArgs
+    public class ValueEventArgs<T> : EventArgs
     {
         public T Value { get; set; }
 

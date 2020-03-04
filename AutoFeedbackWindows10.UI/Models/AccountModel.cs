@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AutoFeedbackWindows10.UI.Models
 {
-    class AccountModel
+    public class AccountModel
     {
         // General and login info
         public string Email { get; set; }

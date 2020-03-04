@@ -22,7 +22,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-            <Style TargetType="TextBlock">
+            <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                 <Setter Property="Margin" Value="8,12,0,8" />
                 <Setter Property="TextWrapping" Value="Wrap" />
                 <Setter Property="Height" Value="44" />
@@ -122,11 +122,11 @@
             </ListBox>
         </StackPanel>
         <TextBox
-            Height="200"
-            Text="Giáo viên rất nhiệt tình"
             Grid.Row="1"
             Grid.ColumnSpan="3"
+            Height="200"
             AcceptsReturn="True"
-            PlaceholderText="Comment ..." />
+            PlaceholderText="Comment ..."
+            Text="Giáo viên rất nhiệt tình" />
     </Grid>
 </UserControl>

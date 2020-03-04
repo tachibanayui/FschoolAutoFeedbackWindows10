@@ -9,6 +9,6 @@ namespace AutoFeedbackWindows10.UI.Models
     class AccountStorageModel
     {
         public List<AccountModel> Accounts { get; set; } = new List<AccountModel>();
-        public AccountModel ActuveAccount { get; set; }
+        public AccountModel ActiveAccount { get; set; }
     }
 }

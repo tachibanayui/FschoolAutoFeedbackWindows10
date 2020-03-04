@@ -143,6 +143,9 @@
     <Compile Include="Models\ContributorModel.cs" />
     <Compile Include="Models\FeedbackTeacher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UCSavedLogin.xaml.cs">
+      <DependentUpon>UCSavedLogin.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UCSurveyForm.xaml.cs">
       <DependentUpon>UCSurveyForm.xaml</DependentUpon>
     </Compile>
@@ -195,12 +198,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UCSavedLogin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UCSurveyForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack">
+      <Version>1.11.21</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.9</Version>
     </PackageReference>
@@ -222,6 +232,9 @@
       <Project>{97f79cb4-fb7b-4dc3-8a08-28fa5694a73c}</Project>
       <Name>ExpressionBuilder</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="XamlResources\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

@@ -8,102 +8,142 @@
     xmlns:local="using:AutoFeedbackWindows10.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    Loaded="Page_Loaded"
     mc:Ignorable="d">
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" MinHeight="56" />
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition Width="2*" MaxWidth="600" />
-            <ColumnDefinition Width="2*" />
-            <ColumnDefinition />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
 
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition Height="10*" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
         <Image
-            Grid.RowSpan="3"
-            Grid.ColumnSpan="4"
+            Grid.RowSpan="4"
+            Grid.ColumnSpan="3"
             Source="/Assets/Images/LoginBackground.jpg"
             Stretch="UniformToFill" />
+
+        <Button
+            Margin="8"
+            VerticalAlignment="Top"
+            Background="Transparent"
+            Click="BackButton_Click">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <FontIcon FontSize="34" Glyph="&#xE7EA;" />
+                <TextBlock
+                    Grid.Column="2"
+                    Style="{ThemeResource SubheaderTextBlockStyle}"
+                    Text="Go back" />
+            </Grid>
+        </Button>
+
         <WebView
             x:Name="webLogin"
-            Grid.Row="1"
-            Grid.Column="1"
+            Grid.RowSpan="3"
+            Grid.ColumnSpan="3"
             MaxWidth="600"
-            NavigationStarting="webLogin_NavigationStarting">
-            <WebView.TranslationTransition>
-                <Vector3Transition />
-            </WebView.TranslationTransition>
-        </WebView>
+            NavigationStarting="webLogin_NavigationStarting" />
         <Border
-            Grid.Row="1"
-            Grid.Column="2"
-            Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-            CornerRadius="0,12,12,0">
-            <Grid Margin="8">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1*" />
-                    <RowDefinition Height="auto" />
-                </Grid.RowDefinitions>
-                <TextBlock FontSize="16" TextWrapping="Wrap">
-                    <Run FontSize="32" Text="Fschool custom login" />
-                    <LineBreak />
-                    <Run Text="To continue using fschool auto feedback windows 10 edition, please sign in your fschool account" />
-                    <LineBreak />
-                    <Run FontSize="32" Text="About Fschool auto feedback" />
-                    <LineBreak />
-                    <Run Text="I think all of fschooler know how frustrated to feedback every teacher?" />
-                    <Run Text="Not only it repetitive, but also it takes forever to just wait for the website to load" />
-                    <LineBreak />
-                    <Run Text="Sure, it's only take 30 minutes to take feedback, but in 30 minutes we can do other *activities*." />
-                    <Run Text="Time is precious in fpt campus and I want to practice the new framework too, that why auto feedback project is created" />
-                    <LineBreak />
-                    <LineBreak />
-                    <Run FontSize="24" Text="So why do you need to feedback teachers?" />
-                    <LineBreak />
-                    <Run Text="Good question :). Firstly, take feedback is required in our school every term." />
-                    <Run Text="Secondly, the school website will not show grades if we don't don't feedback" />
-                    <Bold>all</Bold>
-                    <Run Text="teachers" />
-                    <LineBreak />
-                    <LineBreak />
-                    <Run FontSize="24" Text="Feature of fschool auto feedback" />
-                    <LineBreak />
-                    <Run Text="- Feedback all teachers with a few simple click" />
-                    <LineBreak />
-                    <Run Text="- No in between wait, you can feel free to use your computer while we do the hard lifting" />
-                    <LineBreak />
-                    <Run Text="- Easy sign in and multi account managment" />
-                    <LineBreak />
-                    <Run Text="- Friendly user interface (I guess :v)" />
-                    <LineBreak />
-                    <Italic Foreground="#BBBBBB">
-                        (Find out more in
-                        <Hyperlink>about page</Hyperlink>
-                        )
-                    </Italic>
-                </TextBlock>
-
-                <StackPanel Grid.Row="1">
-                    <TextBlock Text="If you like the project, please give us a star and share this to your friend to keep me motivated is this project" TextWrapping="Wrap" />
-                    <Button HorizontalAlignment="Right">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto" />
-                                <ColumnDefinition Width="4" />
-                                <ColumnDefinition Width="auto" />
-                            </Grid.ColumnDefinitions>
-                            <!--  Github icon  -->
-                            <PathIcon Data="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
-                            <TextBlock Text="Give us a star" Grid.Column="2" VerticalAlignment="Top" />
-                        </Grid>
-                    </Button>
-                </StackPanel>
-            </Grid>
+            x:Name="bdSavedAccountHeader"
+            Grid.Row="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Height="56"
+            MaxWidth="600"
+            Background="White"
+            BorderBrush="#BBBBBB"
+            BorderThickness="1"
+            CornerRadius="0,0,8,8">
+            <ToggleButton
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                BorderThickness="0"
+                Click="Button_Click">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon
+                        FontSize="24"
+                        Foreground="Black"
+                        Glyph="&#xE971;" />
+                    <TextBlock
+                        Grid.Column="2"
+                        FontSize="24"
+                        Foreground="Black"
+                        Text="Saved accounts" />
+                </Grid>
+            </ToggleButton>
         </Border>
+        <Border
+            x:Name="bdSavedAccount"
+            Grid.RowSpan="3"
+            Grid.ColumnSpan="3"
+            MaxWidth="600"
+            MaxHeight="1000"
+            Background="White"
+            CornerRadius="8,8,0,0"
+            Opacity="0">
+            <Grid RequestedTheme="Light" Margin="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="8" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+                <FontIcon FontSize="48" Glyph="&#xE8FA;" />
+                <TextBlock
+                    Grid.Row="1"
+                    HorizontalAlignment="Center"
+                    Style="{ThemeResource TitleTextBlockStyle}"
+                    Text="Login Using Saved Account" />
+                <local:UCSavedLogin
+                    x:Name="savedLogin"
+                    Grid.Row="3"
+                    AccountDelete="SavedAccunts_DeleteAccount"
+                    AccountSelected="SavedAccounts_SelecteAccount" />
+            </Grid>
+            <Border.OpacityTransition>
+                <ScalarTransition />
+            </Border.OpacityTransition>
+        </Border>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="compact">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="1000" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="webLogin.(Grid.Row)" Value="1" />
+                        <Setter Target="webLogin.(Grid.Column)" Value="1" />
+                        <Setter Target="webLogin.(Grid.RowSpan)" Value="1" />
+                        <Setter Target="webLogin.(Grid.ColumnSpan)" Value="1" />
+                        <Setter Target="bdSavedAccount.(Grid.Row)" Value="1" />
+                        <Setter Target="bdSavedAccount.(Grid.Column)" Value="1" />
+                        <Setter Target="bdSavedAccount.(Grid.RowSpan)" Value="1" />
+                        <Setter Target="bdSavedAccount.(Grid.ColumnSpan)" Value="1" />
+                        <Setter Target="bdSavedAccountHeader.(Grid.Row)" Value="2" />
+                        <Setter Target="bdSavedAccountHeader.(Grid.Column)" Value="1" />
+                        <Setter Target="bdSavedAccountHeader.(Grid.RowSpan)" Value="1" />
+                        <Setter Target="bdSavedAccountHeader.(Grid.ColumnSpan)" Value="1" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
     </Grid>
 </Page>

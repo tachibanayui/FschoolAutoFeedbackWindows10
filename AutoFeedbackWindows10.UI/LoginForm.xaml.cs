@@ -1,12 +1,15 @@
 ﻿using AutoFeedbackWindows10.UI.DataProviders;
 using AutoFeedbackWindows10.UI.Models;
+using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -15,6 +18,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using Windows.Web.Http;
 using Windows.Web.Http.Filters;
@@ -29,7 +33,11 @@ namespace AutoFeedbackWindows10.UI
     public sealed partial class LoginForm : Page
     {
         HttpBaseProtocolFilter httpBase = new HttpBaseProtocolFilter();
+        public ObservableCollection<AccountModel> SavedAccounts = new ObservableCollection<AccountModel>();
         public const string GoogleLoginLink = @"https://accounts.google.com/o/oauth2/auth?scope=profile%20email&state=%2Fprofile&redirect_uri=http://fschool.fpt.edu.vn/LoginPage/Login.aspx&response_type=code&client_id=699800698114-ahs58mmqlmscei6tvhdcabidotspimif.apps.googleusercontent.com&approval_prompt=auto&access_type=offline";
+        public const string FschoolDomain = "http://fschool.fpt.edu.vn";
+        private const string GoogleAccountDomain = "https://accounts.google.com";
+        public const string SessionIDCookieName = "ASP.NET_SessionId";
 
         public LoginForm()
         {
@@ -37,33 +45,128 @@ namespace AutoFeedbackWindows10.UI
         }
 
 
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
+            base.OnNavigatedTo(e);
             webLogin.Navigate(new Uri(GoogleLoginLink));
+            savedLogin.SetAccountPool(await AccountProvider.GetAccounts());
         }
 
         private async void webLogin_NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
         {
-            if(args.Uri.ToString().Contains("http://fschool.fpt.edu.vn/DefaultPage/StudentDefaultPage.aspx"))
+            if(args.Uri.ToString().Contains( $"{FschoolDomain}/DefaultPage/StudentDefaultPage.aspx"))
             {
                 args.Cancel = true;
                 string uriString = args.Uri.ToString();
 
-                string sessionID = httpBase.CookieManager.GetCookies(new Uri("http://fschool.fpt.edu.vn")).FirstOrDefault(x => x.Name == "ASP.NET_SessionId").Value;
-
-                Dictionary<string, string> cookies = new Dictionary<string, string>();
-                foreach (var item in httpBase.CookieManager.GetCookies(new Uri("https://accounts.google.com")))
-                {
-                    cookies.Add(item.Name, item.Value);
-                    httpBase.CookieManager.DeleteCookie(item);
-                }
+                string sessionID = httpBase.CookieManager.GetCookies(new Uri(FschoolDomain)).FirstOrDefault(x => x.Name == SessionIDCookieName).Value;
+                Dictionary<string, string> cookies = GetAndDeleteLoginCookie();
 
                 // We can kinda *guess* the email address by the student id
-                string email = uriString.Substring(uriString.IndexOf("=") + 1).Replace("#", "");
-
-                var createdAccount = await AccountProvider.AddOrUpdateAccountAsync(email, sessionID, cookies);
-                await AccountProvider.SetActiveAccountAsync(createdAccount);
+                string email = uriString.Substring(uriString.IndexOf("=") + 1).Replace("#", "") + "@fpt.edu.vn";
+                string name = await GetAccountName(sessionID);
+                if (!string.IsNullOrEmpty(name))
+                {
+                    var createdAccount = await AccountProvider.AddOrUpdateAccountAsync(name, email, sessionID, cookies);
+                    await AccountProvider.SetActiveAccountAsync(createdAccount);
+                    Frame.GoBack(new DrillInNavigationTransitionInfo());
+                }
+                else
+                {
+                    ContentDialog failedToLoginDialog = new ContentDialog()
+                    {
+                        Content = "Sorry, we can't login using this account, please try again",
+                        CloseButtonText = "OK"
+                    };
+                    await failedToLoginDialog.ShowAsync();
+                    GetAndDeleteLoginCookie();
+                    webLogin.Navigate(new Uri(GoogleLoginLink));
+                }
             }
+        }
+
+        private Dictionary<string, string> GetAndDeleteLoginCookie()
+        {
+            Dictionary<string, string> cookies = new Dictionary<string, string>();
+            foreach (var item in httpBase.CookieManager.GetCookies(new Uri(GoogleAccountDomain)))
+            {
+                cookies.Add(item.Name, item.Value);
+                httpBase.CookieManager.DeleteCookie(item);
+            }
+
+            return cookies;
+        }
+
+        // TODO: Fix method can't set cookies
+        private void SetLoginCookies(Dictionary<string,string> cookies)
+        {
+            foreach (var item in cookies)
+            {
+                httpBase.CookieManager.SetCookie(new HttpCookie(item.Key, GoogleAccountDomain, "/") { Value = item.Value });
+            }
+        }
+
+        private async Task<string> GetAccountName(string sessionId)
+        {
+            // we will create or own request to avoid loading scripts and image that might cause performance overhead
+            try
+            {
+                HttpWebRequest req = WebRequest.CreateHttp($"{FschoolDomain}/DefaultPage/StudentDefaultPage.aspx");
+                req.CookieContainer = new CookieContainer();
+                req.CookieContainer.Add(new Cookie(SessionIDCookieName, sessionId) { Domain = req.Host });
+                using (var resp = await req.GetResponseAsync())
+                {
+                    using (var stream = resp.GetResponseStream())
+                    {
+                        using (var reader = new StreamReader(stream))
+                        {
+                            string data = reader.ReadToEnd();
+                            HtmlDocument doc = new HtmlDocument();
+                            doc.LoadHtml(data);
+                            return doc.DocumentNode.SelectSingleNode("/html/body/div/header/nav/div/ul/li[2]/ul/li[1]/p")
+                                .InnerText.Replace("\"", "").Trim()
+                                .Split("\r")[0];
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        private void Github_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://github.com/quangaming2929/FschoolAutoFeedbackWindows10");
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleButton btn = sender as ToggleButton;
+            bdSavedAccount.Opacity = btn.IsChecked == true ? 1 : 0;
+        }
+
+        private async void SavedAccunts_DeleteAccount(object sender, ValueEventArgs<AccountModel> e)
+        {
+            await AccountProvider.RemoveAccountAsync(e.Value);
+        }
+
+        private void SavedAccounts_SelecteAccount(object sender, ValueEventArgs<AccountModel> e)
+        {
+            if(e.Value.Cookies != null)
+            {
+                GetAndDeleteLoginCookie();
+                SetLoginCookies(e.Value.Cookies);
+                webLogin.Navigate(new Uri(GoogleLoginLink));
+            }
+        }
+
+
+
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.GoBack(new DrillInNavigationTransitionInfo());
         }
     }
 }

@@ -39,7 +39,7 @@
 
                 <TextBlock
                     Margin="16,88,0,0"
-                    FontSize="24"
+                    Style="{ThemeResource TitleTextBlockStyle}"
                     Text="This page allow you to send the same feedback to all teachers"
                     TextWrapping="Wrap" />
 
@@ -63,7 +63,7 @@
                         Symbol="Contact" />
                     <TextBlock
                         Grid.Column="1"
-                        FontSize="32"
+                        Style="{ThemeResource SubheaderTextBlockStyle}"
                         Text="88 teachers will be feedback" />
 
                     <SplitButton Grid.Column="1" HorizontalAlignment="Right">
@@ -79,7 +79,7 @@
                                 Glyph="&#xE724;" />
                             <TextBlock
                                 Grid.Column="1"
-                                FontSize="28"
+                                Style="{ThemeResource TitleTextBlockStyle}"
                                 Text="Send" />
                         </Grid>
                         <SplitButton.Flyout>

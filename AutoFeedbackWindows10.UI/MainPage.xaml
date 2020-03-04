@@ -8,7 +8,97 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
+    <Page.Resources>
+        <Flyout x:Name="foAccount" LightDismissOverlayMode="On">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+                <Grid x:Name="pnlCurrentAccount" Width="300">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="8" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
 
+                    <TextBlock
+                        Grid.ColumnSpan="3"
+                        Style="{ThemeResource BaseTextBlockStyle}"
+                        Text="Currently logged in as:" />
+                    <Button
+                        Grid.ColumnSpan="3"
+                        Padding="0"
+                        HorizontalAlignment="Right"
+                        Background="Transparent"
+                        Click="AddAccount_Click">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*" />
+                                <ColumnDefinition Width="4" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Text="Add account" />
+                            <FontIcon
+                                Grid.Column="2"
+                                FontSize="12"
+                                Glyph="&#xE76C;" />
+                        </Grid>
+                    </Button>
+                    <PersonPicture
+                        x:Name="spAccountFO"
+                        Grid.Row="1"
+                        Height="48"
+                        Margin="24,0,0,0"
+                        VerticalAlignment="Bottom" />
+                    <StackPanel Grid.Row="1" Grid.Column="2">
+                        <TextBlock
+                            x:Name="txblDisplayNameFO"
+                            Margin="0,12,0,0"
+                            Style="{ThemeResource TitleTextBlockStyle}" />
+                        <TextBlock x:Name="txblEmailFO" Style="{ThemeResource BodyTextBlockStyle}" />
+                    </StackPanel>
+                    <StackPanel
+                        Grid.Row="3"
+                        Grid.ColumnSpan="3"
+                        Margin="0,8,0,0"
+                        HorizontalAlignment="Right"
+                        Orientation="Horizontal">
+                        <Button
+                            Margin="0,0,8,0"
+                            Content="Account detail"
+                            Style="{ThemeResource ButtonRevealStyle}" />
+                        <Button
+                            Click="Signout_Click"
+                            Content="Sign out"
+                            Style="{ThemeResource ButtonRevealStyle}" />
+                    </StackPanel>
+                </Grid>
+                <Grid x:Name="pnlAvailableAccounts" Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="1*" />
+                    </Grid.RowDefinitions>
+                    <NavigationViewItemSeparator />
+                    <TextBlock
+                        Grid.Row="1"
+                        Style="{ThemeResource BaseTextBlockStyle}"
+                        Text="Available accounts" />
+                    <local:UCSavedLogin
+                        x:Name="saFlyout"
+                        Grid.Row="3"
+                        AccountDelete="SavedAccounts_Delete" />
+                </Grid>
+            </Grid>
+        </Flyout>
+    </Page.Resources>
     <NavigationView x:Name="navRoot" ItemInvoked="navRoot_ItemInvoked">
         <NavigationView.MenuItems>
             <NavigationViewItem Content="Home" Icon="Home" />
@@ -20,6 +110,14 @@
             <NavigationViewItem Content="Individual Feedback" Icon="AllApps" />
         </NavigationView.MenuItems>
 
+        <NavigationView.PaneFooter>
+            <StackPanel>
+                <NavigationViewItem
+                    Content="Account"
+                    Icon="Contact"
+                    Tapped="Account_Tapped" />
+            </StackPanel>
+        </NavigationView.PaneFooter>
         <Frame x:Name="navFrame">
             <Frame.ContentTransitions>
                 <TransitionCollection>

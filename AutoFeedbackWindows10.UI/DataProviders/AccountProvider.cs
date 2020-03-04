@@ -30,6 +30,16 @@ namespace AutoFeedbackWindows10.UI.DataProviders
             }
         }
 
+        public static async Task<AccountModel> GetActiveAccount()
+        {
+            if (StorageAccounts == null)
+            {
+                await LoadUsersFromStorage();
+            }
+
+            return StorageAccounts?.ActiveAccount;
+        }
+
         public static async Task<IReadOnlyCollection<AccountModel>> GetAccounts()
         {
             if (StorageAccounts == null)
@@ -60,7 +70,7 @@ namespace AutoFeedbackWindows10.UI.DataProviders
             return StorageAccounts.Accounts.FirstOrDefault(x => x.Email == email);
         }
 
-        public static async Task<AccountModel> AddOrUpdateAccountAsync(string email, string sessionID, Dictionary<string, string> cookies)
+        public static async Task<AccountModel> AddOrUpdateAccountAsync(string name, string email, string sessionID, Dictionary<string, string> cookies)
         {
             if (StorageAccounts == null)
             {
@@ -72,12 +82,13 @@ namespace AutoFeedbackWindows10.UI.DataProviders
             if(sModel != null)
             {
                 sModel.SessionID = sessionID;
+                sModel.Name = name;
                 sModel.Cookies = cookies;
                 return sModel;
             }
             else
             {
-                var item = new AccountModel() { SessionID = sessionID, Email = email };
+                var item = new AccountModel() { SessionID = sessionID, Email = email, Name = name };
                 StorageAccounts.Accounts.Add(item);
                 return item;
             }
@@ -92,7 +103,10 @@ namespace AutoFeedbackWindows10.UI.DataProviders
             }
 
             if (StorageAccounts.Accounts.Contains(model))
+            {
+                StorageAccounts.ActiveAccount = model;
                 OnActiveAccountChanged(model);
+            }
         }
 
         public static async Task RemoveAccountAsync(AccountModel model)
