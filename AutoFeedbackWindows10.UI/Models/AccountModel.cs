@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using AutoFeedbackWindows10.UI.Utils;
+using HtmlAgilityPack;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -47,6 +48,15 @@ namespace AutoFeedbackWindows10.UI.Models
 
         //Internally
         public DateTime LastUpdated { get; set; }
+
+        public static async Task<bool> IsLoginPage(string html)
+        {
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(html);
+            // We gonna search for "Please fill out the following fields to login" node and vertify
+            var textNode = doc.DocumentNode.SelectSingleNode("//*[@id=\"p\"]/div[1]/div[2]/p");
+            return textNode != null && textNode.InnerText.Contains("Please fill out the following fields to login");
+        }
 
         public static async Task<string> GetAccountName(string sessionID)
         {
@@ -99,14 +109,22 @@ namespace AutoFeedbackWindows10.UI.Models
                         using (var reader = new StreamReader(stream))
                         {
                             string respString = await reader.ReadToEndAsync();
+                            // Throw exception if we get login page, indicate that our session id is invalid
+                            if (await IsLoginPage(respString))
+                                throw new InvalidSessionIDException($"{Email} session id: {SessionID} is invalid or expired, please request a new one and try again");
+
                             AnalyzeHtml(respString);
                         }
                     }
                 }
             }
+            catch (InvalidSessionIDException) // we don't wrap this exception
+            {
+                throw;
+            }
             catch (Exception e)
             {
-                throw new InvalidOperationException("Failed to request data from fschool.fpt.edu.vn, this is likely invalid session id", e);
+                throw new InvalidOperationException("Failed to analyze data from fschool.fpt.edu.vn", e);
             }
         }
 
@@ -131,6 +149,8 @@ namespace AutoFeedbackWindows10.UI.Models
             MemberCode = doc.GetElementbyId("ContentPlaceHolder1_lblMemberCode").InnerText.Trim();
             EnrolDate = DateTime.ParseExact(doc.GetElementbyId("ContentPlaceHolder1_lblEnrolDate").InnerText.Trim(), "dd/MM/yyyy", CultureInfo.InvariantCulture);
             Status = doc.GetElementbyId("ContentPlaceHolder1_lblStatus").InnerText.Trim();
+
+            LastUpdated = DateTime.Now;
         }
     }
 }

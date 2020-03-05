@@ -150,6 +150,8 @@
     <Compile Include="UCSurveyForm.xaml.cs">
       <DependentUpon>UCSurveyForm.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils\InvalidSessionIDException.cs" />
+    <Compile Include="Utils\LatinEncodingHelper.cs" />
     <Compile Include="ValueEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -211,6 +213,9 @@
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack">
       <Version>1.11.21</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client">
+      <Version>5.2.7</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.9</Version>
