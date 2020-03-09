@@ -1,6 +1,8 @@
 ﻿using AutoFeedbackWindows10.UI.DataProviders;
+using AutoFeedbackWindows10.UI.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -23,6 +25,9 @@ namespace AutoFeedbackWindows10.UI
     /// </summary>
     sealed partial class App : Application
     {
+        public FeedbackEntryProvider FeedbackProvider { get; set; }
+        public ObservableCollection<BatchedFeedbackModel> BatchedFeedBacks { get; set; } = new ObservableCollection<BatchedFeedbackModel>();
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -31,6 +36,12 @@ namespace AutoFeedbackWindows10.UI
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+            AccountProvider.ActiveAccountChanged += AccountProvider_ActiveAccountChanged;
+        }
+
+        private void AccountProvider_ActiveAccountChanged(object sender, ValueEventArgs<AccountModel> e)
+        {
+            FeedbackProvider.CurrentAccount = e.Value;
         }
 
         /// <summary>
@@ -38,8 +49,9 @@ namespace AutoFeedbackWindows10.UI
         /// will be used such as when the application is launched to open a specific file.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected async override void OnLaunched(LaunchActivatedEventArgs e)
         {
+            FeedbackProvider = new FeedbackEntryProvider(await AccountProvider.GetActiveAccount());
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,

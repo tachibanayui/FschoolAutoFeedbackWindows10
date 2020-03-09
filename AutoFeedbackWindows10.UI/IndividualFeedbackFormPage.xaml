@@ -41,7 +41,10 @@
                         Grid.Row="1"
                         FontSize="24"
                         Text="Feedback form" />
-                    <local:UCSurveyForm Grid.Row="2" Margin="4" />
+                    <local:UCSurveyForm
+                        Grid.Row="2"
+                        Margin="4"
+                        DataContext="{Binding}" />
                 </Grid>
             </StackPanel>
         </ScrollViewer>
@@ -79,16 +82,15 @@
                 Margin="0,0,12,0"
                 VerticalAlignment="Top"
                 DisplayName="{Binding TeacherName}" />
-            <TextBlock
-                x:Name="txblHeaderName"
-                Grid.Column="1"
-                Text="{Binding TeacherName}" />
-            <TextBlock
-                x:Name="txblHeaderClassName"
-                Grid.Row="2"
-                Grid.Column="1"
-                Foreground="#BBBBBB"
-                Text="{Binding ClassName}" />
+            <Border Grid.RowSpan="2" Grid.Column="1">
+                <StackPanel x:Name="pnlBasicInfo">
+                    <TextBlock x:Name="txblHeaderName" Text="{Binding TeacherName}" />
+                    <TextBlock
+                        x:Name="txblHeaderClassName"
+                        Foreground="#BBBBBB"
+                        Text="{Binding ClassName}" />
+                </StackPanel>
+            </Border>
 
             <Grid
                 x:Name="pnlDetail"
@@ -143,6 +145,7 @@
             </StackPanel>
 
             <SplitButton
+                Click="btnSend_Click"
                 x:Name="btnSend"
                 Grid.Row="6"
                 Grid.ColumnSpan="2"

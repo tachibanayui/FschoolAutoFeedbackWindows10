@@ -141,6 +141,7 @@
     </Compile>
     <Compile Include="Models\AccountModel.cs" />
     <Compile Include="Models\AccountStorageModel.cs" />
+    <Compile Include="Models\BatchedFeedbackModel.cs" />
     <Compile Include="Models\ContributorModel.cs" />
     <Compile Include="Models\FeedbackTeacherModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -152,6 +153,8 @@
     </Compile>
     <Compile Include="Utils\InvalidSessionIDException.cs" />
     <Compile Include="Utils\LatinEncodingHelper.cs" />
+    <Compile Include="Utils\LoginHelper.cs" />
+    <Compile Include="ValueConverters\FeedbackChoiceConverter.cs" />
     <Compile Include="ValueEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>

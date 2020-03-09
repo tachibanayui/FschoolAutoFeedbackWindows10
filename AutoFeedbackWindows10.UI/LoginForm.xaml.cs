@@ -110,10 +110,7 @@ namespace AutoFeedbackWindows10.UI
             }
         }
 
-        private void Github_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://github.com/quangaming2929/FschoolAutoFeedbackWindows10");
-        }
+        private void Github_Click(object sender, RoutedEventArgs e) => Process.Start("https://github.com/quangaming2929/FschoolAutoFeedbackWindows10");
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {

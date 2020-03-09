@@ -9,6 +9,90 @@
     Loaded="Page_Loaded"
     mc:Ignorable="d">
     <Page.Resources>
+        <Style TargetType="GridView">
+            <Setter Property="CanDragItems" Value="True" />
+            <Setter Property="CanReorderItems" Value="True" />
+            <Setter Property="AllowDrop" Value="True" />
+            <Setter Property="SelectionMode" Value="Extended" />
+
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <Grid Width="350" ContextFlyout="{StaticResource flyoutOptions}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
+
+                            <PersonPicture
+                                Grid.RowSpan="2"
+                                Height="44"
+                                Margin="16,0,12,0"
+                                DisplayName="{Binding TeacherName}" />
+                            <TextBlock
+                                Grid.Column="1"
+                                VerticalAlignment="Center"
+                                FontWeight="Bold"
+                                Text="{Binding TeacherName}" />
+                            <TextBlock
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Foreground="#BBBBBB"
+                                Text="{Binding ClassName}" />
+
+                            <DropDownButton
+                                Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                Background="Transparent"
+                                Content="Options"
+                                Flyout="{StaticResource flyoutOptions}" />
+
+                            <NavigationViewItemSeparator Grid.Row="2" Grid.ColumnSpan="2" />
+                            <StackPanel
+                                Grid.Row="3"
+                                Grid.ColumnSpan="2"
+                                Margin="16,0,0,0">
+                                <NavigationViewItem
+                                    Content="{Binding FeedbackFor}"
+                                    Icon="AllApps"
+                                    IsHitTestVisible="False"
+                                    ToolTipService.ToolTip="Feedback For" />
+                                <NavigationViewItem IsHitTestVisible="False" ToolTipService.ToolTip="Term &amp; Academic Year">
+                                    <NavigationViewItem.Icon>
+                                        <FontIcon Glyph="&#xEC92;" />
+                                    </NavigationViewItem.Icon>
+                                    <TextBlock>
+                                        <Run Text="{Binding Term}" />
+                                        -<Run Foreground="#BBBBBB" Text="{Binding AcademicYear}" />
+                                    </TextBlock>
+                                </NavigationViewItem>
+                                <NavigationViewItem
+                                    Content="{Binding OpenDate}"
+                                    Icon="Calendar"
+                                    IsHitTestVisible="False"
+                                    ToolTipService.ToolTip="Open Date" />
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemContainerTransitions">
+                <Setter.Value>
+                    <TransitionCollection>
+                        <EntranceThemeTransition IsStaggeringEnabled="True" />
+                        <AddDeleteThemeTransition />
+                        <RepositionThemeTransition />
+                    </TransitionCollection>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <MenuFlyout x:Key="flyoutOptions" Placement="Bottom">
             <MenuFlyoutItem Text="Exclude">
                 <MenuFlyoutItem.Icon>
@@ -61,12 +145,15 @@
                         Height="36"
                         Margin="0,0,16,0"
                         Symbol="Contact" />
-                    <TextBlock
-                        Grid.Column="1"
-                        Style="{ThemeResource SubheaderTextBlockStyle}"
-                        Text="88 teachers will be feedback" />
+                    <TextBlock Grid.Column="1" Style="{ThemeResource SubheaderTextBlockStyle}">
+                        <Run Text="{Binding FBStatusCount}" />
+                        <Run Text="teachers will be feedback" />
+                    </TextBlock>
 
-                    <SplitButton Grid.Column="1" HorizontalAlignment="Right">
+                    <SplitButton
+                        Grid.Column="1"
+                        HorizontalAlignment="Right"
+                        Click="btnSend_Click">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
@@ -90,9 +177,12 @@
                     </SplitButton>
                 </Grid>
 
-                <Pivot Grid.Row="1">
+                <Pivot
+                    x:Name="pivotRoot"
+                    Grid.Row="1"
+                    SelectionChanged="Pivot_SelectionChanged">
                     <PivotItem Header="Forms">
-                        <local:UCSurveyForm />
+                        <local:UCSurveyForm DataContext="{x:Bind CurrentBatch.FeedbackData}" />
                     </PivotItem>
                     <PivotItem Header="Filters">
                         <Grid>
@@ -120,7 +210,12 @@
                                     <ColumnDefinition Width="1*" />
                                     <ColumnDefinition Width="1*" />
                                 </Grid.ColumnDefinitions>
-                                <ComboBox HorizontalAlignment="Stretch" PlaceholderText="Select teacher name ..." />
+                                <ComboBox
+                                    HorizontalAlignment="Stretch"
+                                    ItemsSource="{x:Bind CurrentBatch.TeacherNameFilter}"
+                                    PlaceholderText="Select teacher name ..."
+                                    SelectedItem="{x:Bind CurrentBatch.FeedbackData.TeacherName, Mode=TwoWay}"
+                                    SelectionChanged="Event_FilterChanged" />
                             </Grid>
 
                             <Grid
@@ -132,7 +227,12 @@
                                     <ColumnDefinition Width="1*" />
                                     <ColumnDefinition Width="1*" />
                                 </Grid.ColumnDefinitions>
-                                <ComboBox HorizontalAlignment="Stretch" PlaceholderText="Select class name ..." />
+                                <ComboBox
+                                    HorizontalAlignment="Stretch"
+                                    ItemsSource="{x:Bind CurrentBatch.ClassNameFilter}"
+                                    PlaceholderText="Select class name ..."
+                                    SelectedItem="{x:Bind CurrentBatch.FeedbackData.ClassName, Mode=TwoWay}"
+                                    SelectionChanged="Event_FilterChanged" />
                             </Grid>
 
                             <NavigationViewItemSeparator Grid.Row="2" Grid.ColumnSpan="2" />
@@ -142,96 +242,143 @@
                                 Grid.ColumnSpan="2"
                                 Margin="16,0,0,0">
                                 <NavigationViewItem Icon="AllApps" ToolTipService.ToolTip="Feedback For">
-                                    <ComboBox PlaceholderText="Select teacher type (feedback for)" />
+                                    <ComboBox
+                                        ItemsSource="{x:Bind CurrentBatch.FeedbackForFilter}"
+                                        PlaceholderText="Select teacher type (feedback for)"
+                                        SelectedItem="{x:Bind CurrentBatch.FeedbackData.FeedbackFor, Mode=TwoWay}"
+                                        SelectionChanged="Event_FilterChanged" />
                                 </NavigationViewItem>
                                 <NavigationViewItem ToolTipService.ToolTip="Term &amp; Academic Year">
                                     <NavigationViewItem.Icon>
                                         <FontIcon Glyph="&#xEC92;" />
                                     </NavigationViewItem.Icon>
-                                    <ComboBox PlaceholderText="Select terms" />
+                                    <ComboBox
+                                        ItemsSource="{x:Bind CurrentBatch.TermFilter}"
+                                        PlaceholderText="Select terms"
+                                        SelectedItem="{x:Bind CurrentBatch.FeedbackData.Term, Mode=TwoWay}"
+                                        SelectionChanged="Event_FilterChanged" />
                                 </NavigationViewItem>
                                 <NavigationViewItem ToolTipService.ToolTip="Term &amp; Academic Year">
                                     <NavigationViewItem.Icon>
                                         <FontIcon Glyph="&#xE8F5;" />
                                     </NavigationViewItem.Icon>
-                                    <ComboBox PlaceholderText="Select academic year" />
+                                    <ComboBox
+                                        ItemsSource="{x:Bind CurrentBatch.AcademicYearFilter}"
+                                        PlaceholderText="Select academic year"
+                                        SelectedItem="{x:Bind CurrentBatch.FeedbackData.AcademicYear, Mode=TwoWay}"
+                                        SelectionChanged="Event_FilterChanged" />
                                 </NavigationViewItem>
                                 <NavigationViewItem Icon="Calendar" ToolTipService.ToolTip="Open Date">
-                                    <ComboBox PlaceholderText="Select open date" />
+                                    <ComboBox
+                                        ItemsSource="{x:Bind CurrentBatch.OpenDateFilter}"
+                                        PlaceholderText="Select open date"
+                                        SelectedItem="{x:Bind CurrentBatch.FeedbackData.OpenDate, Mode=TwoWay}"
+                                        SelectionChanged="Event_FilterChanged" />
+                                </NavigationViewItem>
+                                <NavigationViewItem Icon="Attach" ToolTipService.ToolTip="Open Date">
+                                    <ComboBox
+                                        ItemsSource="{x:Bind CurrentBatch.FeedbackStatusFilter}"
+                                        PlaceholderText="Select feedback status"
+                                        SelectedItem="{x:Bind CurrentBatch.FeedbackStatusFilterValue, Mode=TwoWay}"
+                                        SelectionChanged="Event_FilterChanged" />
                                 </NavigationViewItem>
                             </StackPanel>
                         </Grid>
                     </PivotItem>
                     <PivotItem Header="Teachers">
-                        <StackPanel>
-                            <TextBlock Text="Included teachers:" />
-                            <GridView ItemsSource="{x:Bind Teachers}" SelectionMode="None">
-                                <GridView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid Width="350" ContextFlyout="{StaticResource flyoutOptions}">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="auto" />
-                                                <RowDefinition Height="auto" />
-                                                <RowDefinition Height="auto" />
-                                                <RowDefinition Height="auto" />
-                                                <RowDefinition Height="auto" />
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="auto" />
-                                                <ColumnDefinition Width="1*" />
-                                            </Grid.ColumnDefinitions>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
 
-                                            <PersonPicture
-                                                Grid.RowSpan="2"
-                                                Height="44"
-                                                Margin="16,0,12,0"
-                                                DisplayName="{Binding TeacherName}" />
-                                            <TextBlock
-                                                Grid.Column="1"
-                                                VerticalAlignment="Center"
-                                                FontWeight="Bold"
-                                                Text="{Binding TeacherName}" />
-                                            <TextBlock
-                                                Grid.Row="1"
-                                                Grid.Column="1"
-                                                Foreground="#BBBBBB"
-                                                Text="{Binding ClassName}" />
+                            <Grid Grid.Column="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                            </Grid>
 
-                                            <DropDownButton
-                                                Grid.Column="1"
-                                                HorizontalAlignment="Right"
-                                                Background="Transparent"
-                                                Content="Options"
-                                                Flyout="{StaticResource flyoutOptions}" />
+                            <Grid Grid.Row="1" Margin="8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="1*" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="1*" />
+                                </Grid.ColumnDefinitions>
 
-                                            <NavigationViewItemSeparator Grid.Row="2" Grid.ColumnSpan="2" />
-                                            <StackPanel
-                                                Grid.Row="3"
-                                                Grid.ColumnSpan="2"
-                                                Margin="16,0,0,0">
-                                                <NavigationViewItem
-                                                    Content="{Binding FeedbackFor}"
-                                                    Icon="AllApps"
-                                                    ToolTipService.ToolTip="Feedback For" />
-                                                <NavigationViewItem ToolTipService.ToolTip="Term &amp; Academic Year">
-                                                    <NavigationViewItem.Icon>
-                                                        <FontIcon Glyph="&#xEC92;" />
-                                                    </NavigationViewItem.Icon>
-                                                    <TextBlock>
-                                                        <Run Text="{Binding Term}" />
-                                                        -<Run Foreground="#BBBBBB" Text="{Binding AcademicYear}" />
-                                                    </TextBlock>
-                                                </NavigationViewItem>
-                                                <NavigationViewItem
-                                                    Content="{Binding OpenDate}"
-                                                    Icon="Calendar"
-                                                    ToolTipService.ToolTip="Open Date" />
-                                            </StackPanel>
-                                        </Grid>
-                                    </DataTemplate>
-                                </GridView.ItemTemplate>
-                            </GridView>
-                        </StackPanel>
+                                <FontIcon FontSize="32" Glyph="&#xF78C;" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Margin="12,0,0,0"
+                                    Style="{StaticResource SubheaderTextBlockStyle}"
+                                    Text="Included teachers:" />
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    TextWrapping="Wrap">
+                                    <Run Text="These teacher" />
+                                    <Bold>will</Bold>
+                                    <Run Text="be automatically feedback when you hit" />
+                                    <Bold>Send</Bold>
+                                </TextBlock>
+                            </Grid>
+                            <GridView
+                                x:Name="grdViewIncludedTeacher"
+                                Grid.Row="2"
+                                DragEnter="GaDTeacher_DragEnter"
+                                DragItemsStarting="GaDTeacher_DragItemsStarting"
+                                DragOver="GaDTeacher_DragOver"
+                                Drop="GaDTeacher_Drop"
+                                ItemsSource="{x:Bind IncludedTeachers}" />
+
+                            <Grid
+                                Grid.Row="1"
+                                Grid.Column="2"
+                                Margin="8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="1*" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="1*" />
+                                </Grid.ColumnDefinitions>
+
+                                <FontIcon FontSize="32" Glyph="&#xF78A;" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Margin="12,0,0,0"
+                                    Style="{StaticResource SubheaderTextBlockStyle}"
+                                    Text="Excluded teachers:" />
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    TextWrapping="Wrap">
+                                    <Run Text="These teacher" />
+                                    <Bold>will not</Bold>
+                                    <Run Text="be automatically feedback when you hit" />
+                                    <Bold>Send</Bold>
+                                </TextBlock>
+                            </Grid>
+                            <GridView
+                                x:Name="grdViewExcludedTeacher"
+                                Grid.Row="2"
+                                Grid.Column="2"
+                                DragEnter="GaDTeacher_DragEnter"
+                                DragItemsStarting="GaDTeacher_DragItemsStarting"
+                                DragOver="GaDTeacher_DragOver"
+                                Drop="GaDTeacher_Drop"
+                                ItemsSource="{x:Bind CurrentBatch.ExcludeTeachers}" />
+                        </Grid>
                     </PivotItem>
                 </Pivot>
             </Grid>
@@ -277,12 +424,13 @@
                     Margin="0,0,16,0"
                     VerticalAlignment="Center"
                     FontSize="40"
-                    Text="88" />
+                    Text="{Binding FBStatusCount}" />
             </StackPanel>
             <SplitButton
                 x:Name="clampSendButton"
                 Grid.Column="4"
-                HorizontalAlignment="Right">
+                HorizontalAlignment="Right"
+                Click="btnSend_Click">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto" />
@@ -305,5 +453,11 @@
                 </SplitButton.Flyout>
             </SplitButton>
         </Grid>
+
+        <ProgressRing
+            Width="40"
+            Height="40"
+            IsActive="{x:Bind IsLoading}"
+            IsHitTestVisible="False" />
     </Grid>
 </Page>

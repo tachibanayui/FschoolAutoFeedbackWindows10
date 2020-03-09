@@ -17,6 +17,9 @@ using Windows.UI.Xaml.Navigation;
 
 using Microsoft.Toolkit.Uwp.UI.Animations.Expressions;
 using System.Numerics;
+using AutoFeedbackWindows10.UI.DataProviders;
+using AutoFeedbackWindows10.UI.Models;
+using Windows.UI.Core;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -27,18 +30,22 @@ namespace AutoFeedbackWindows10.UI
     /// </summary>
     public sealed partial class IndividualFeedbackFormPage : Page
     {
+        private FeedbackEntryProvider Provider => ((App)Application.Current).FeedbackProvider;
+
         public IndividualFeedbackFormPage()
         {
             this.InitializeComponent();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
-            DataContext = e.Parameter;
             var ca = ConnectedAnimationService.GetForCurrentView().GetAnimation("individualClick");
             ca?.TryStart(headerPS, new List<UIElement>() { txblHeaderName, txblHeaderClassName });
+
+            await Dispatcher.RunAsync(CoreDispatcherPriority.High, async () => DataContext = await Provider.GetFeedbackData(e.Parameter as FeedbackTeacherModel));
+
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -73,15 +80,18 @@ namespace AutoFeedbackWindows10.UI
             headerPSVisual.StartAnimation("Scale.Y", scaleNode);
 
 
-            ExpressionNode headerTextNode = ExpressionFunctions.Lerp(new Vector2(0, 0), new Vector2(0.08f, 0), progressionNode);
-            var headerNameVisual = ElementCompositionPreview.GetElementVisual(txblHeaderName);
-            var headerClassNameVisual = ElementCompositionPreview.GetElementVisual(txblHeaderClassName);
-            headerNameVisual.StartAnimation("AnchorPoint", headerTextNode);
-            headerClassNameVisual.StartAnimation("AnchorPoint", headerTextNode);
+            ExpressionNode headerTextNode = ExpressionFunctions.Lerp(new Vector3(0, 0, 0), new Vector3(-50f, 0, 0), progressionNode);
+            var pnlBasicInfoVisual = ElementCompositionPreview.GetElementVisual(pnlBasicInfo);
+            pnlBasicInfoVisual.StartAnimation("Offset", headerTextNode);
 
             ExpressionNode actionButtonNode = ExpressionFunctions.Lerp(new Vector2(0, 0), new Vector2(0, 3.3f), progressionNode);
             var sendButtonViusal = ElementCompositionPreview.GetElementVisual(btnSend);
             sendButtonViusal.StartAnimation("AnchorPoint", actionButtonNode);
+        }
+
+        private async void btnSend_Click(SplitButton sender, SplitButtonClickEventArgs args)
+        {
+            await Provider.SendFeedbackAsync(DataContext as FeedbackTeacherModel);
         }
     }
 }

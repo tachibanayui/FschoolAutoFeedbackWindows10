@@ -14,7 +14,7 @@ using System.Web;
 
 namespace AutoFeedbackWindows10.UI.DataProviders
 {
-    class FeedbackEntryProvider
+    public class FeedbackEntryProvider
     {
         private AccountModel _acct;
         private List<FeedbackTeacherModel> _cachedFeedbackEntries;
@@ -24,6 +24,23 @@ namespace AutoFeedbackWindows10.UI.DataProviders
         public FeedbackEntryProvider(AccountModel account)
         {
             _acct = account;
+        }
+
+        public AccountModel CurrentAccount
+        {
+            get
+            {
+                return _acct;
+            }
+            set
+            {
+                if(_acct != value)
+                {
+                    _acct = value;
+                    _lastGetFeedbackEntries = DateTime.MinValue;
+                    OnAccountChanged(value);
+                }
+            }
         }
 
         public async Task<List<FeedbackTeacherModel>> GetFeedbackEntries()
@@ -62,23 +79,20 @@ namespace AutoFeedbackWindows10.UI.DataProviders
 
                     HtmlDocument doc = new HtmlDocument();
 
-                    await Task.Run(() =>
+                    doc.LoadHtml(val);
+                    ParseFeedbackChoices(model, doc);
+
+                    // parse feedback comment
+                    var commentTextBox = doc.DocumentNode.Descendants("textarea").FirstOrDefault();
+                    if (commentTextBox != null)
                     {
-                        doc.LoadHtml(val);
-                        ParseFeedbackChoices(model, doc);
+                        model.Comment = LatinEncodingHelper.Decode(commentTextBox.InnerText.Trim());
+                    }
 
-                        // parse feedback comment
-                        var commentTextBox = doc.DocumentNode.Descendants("textarea").FirstOrDefault();
-                        if (commentTextBox != null)
-                        {
-                            model.Comment = LatinEncodingHelper.Decode(commentTextBox.InnerText.Trim());
-                        }
-
-                        // Get ViewState and related values
-                        model.__ViewState = doc.DocumentNode.SelectSingleNode("/html/body/div/div[1]/section[2]/form/input[1]").Attributes["value"].Value.Trim();
-                        model.__VIEWSTATEGENERATOR = doc.DocumentNode.SelectSingleNode("/html/body/div/div[1]/section[2]/form/input[2]").Attributes["value"].Value.Trim();
-                        model.__EVENTVALIDATION = doc.DocumentNode.SelectSingleNode("/html/body/div/div[1]/section[2]/form/input[3]").Attributes["value"].Value.Trim();
-                    });
+                    // Get ViewState and related values
+                    model.__ViewState = doc.DocumentNode.SelectSingleNode("/html/body/div/div[1]/section[2]/form/input[1]").Attributes["value"].Value.Trim();
+                    model.__VIEWSTATEGENERATOR = doc.DocumentNode.SelectSingleNode("/html/body/div/div[1]/section[2]/form/input[2]").Attributes["value"].Value.Trim();
+                    model.__EVENTVALIDATION = doc.DocumentNode.SelectSingleNode("/html/body/div/div[1]/section[2]/form/input[3]").Attributes["value"].Value.Trim();
                 
 
                     return model;
@@ -253,5 +267,8 @@ namespace AutoFeedbackWindows10.UI.DataProviders
                 }
             }
         }
+
+        public event EventHandler<ValueEventArgs<AccountModel>> AccountChanged;
+        private void OnAccountChanged(AccountModel model) => AccountChanged?.Invoke(this, new ValueEventArgs<AccountModel>(model));
     }
 }

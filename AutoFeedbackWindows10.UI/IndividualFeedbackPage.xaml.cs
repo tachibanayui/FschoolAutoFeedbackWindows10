@@ -1,4 +1,5 @@
-﻿using AutoFeedbackWindows10.UI.Models;
+﻿using AutoFeedbackWindows10.UI.DataProviders;
+using AutoFeedbackWindows10.UI.Models;
 using Microsoft.Toolkit.Uwp.UI.Animations.Expressions;
 using System;
 using System.Collections.Generic;
@@ -6,8 +7,10 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -27,18 +30,8 @@ namespace AutoFeedbackWindows10.UI
     /// </summary>
     public sealed partial class IndividualFeedbackPage : Page
     {
-        public ObservableCollection<FeedbackTeacherModel> Teachers { get; set; } = new ObservableCollection<FeedbackTeacherModel>()
-        {
-            new FeedbackTeacherModel()
-            {
-                AcademicYear = "2019-2020",
-                ClassName = "11A3-11A3 GDQP 11.1",
-                Term = "Kỳ 1 2019.2020",
-                TeacherName = "luongdv5",
-                FeedbackFor = "Giáo viên Bộ môn",
-                OpenDate = "09/12/2019",
-            },
-        };
+        public ObservableCollection<FeedbackTeacherModel> Teachers { get; set; } = new ObservableCollection<FeedbackTeacherModel>();
+        private FeedbackEntryProvider Provider => ((App)Application.Current).FeedbackProvider;
 
         public IndividualFeedbackPage()
         {
@@ -78,6 +71,45 @@ namespace AutoFeedbackWindows10.UI
             var ca = ConnectedAnimationService.GetForCurrentView().GetAnimation("individualClickBack");
             if(ca != null)
                 await lsvTeachers.TryStartConnectedAnimationAsync(ca, e.Parameter, "templateRoot");
+
+            // Check if user has login
+            if(Provider.CurrentAccount == null)
+            {
+                Frame.Navigate(typeof(LoginForm), null, new DrillInNavigationTransitionInfo());
+                return;
+            }
+            // Add feedback entries
+            await Task.Delay(100);
+            prEntriesLoading.IsActive = true;
+            await RefreshFeedbackEntries();
+            prEntriesLoading.IsActive = false;
         }
+
+        public async Task RefreshFeedbackEntries()
+        {
+            Teachers.Clear();
+            foreach (var item in await Provider.GetFeedbackEntries())
+            {
+                Teachers.Add(item);
+            }
+        }
+
+        public void Test(int thisWouldBeALongPathAsWellToA, int thisWouldBeALongPathAsWellToB, int thisWouldBeALongPathAsWellToC, int thisWouldBeALongPathAsWellToD)
+        {
+            List<Test> sources = new List<Test>();
+            var filters = sources.Where(x =>
+            (x.AVeryLongAccessorPathToA == thisWouldBeALongPathAsWellToA || thisWouldBeALongPathAsWellToA == -1) &&
+            (x.AVeryLongAccessorPathToB == thisWouldBeALongPathAsWellToB || thisWouldBeALongPathAsWellToB == -1) &&
+            (x.AVeryLongAccessorPathToC == thisWouldBeALongPathAsWellToC || thisWouldBeALongPathAsWellToC == -1) &&
+            (x.AVeryLongAccessorPathToD == thisWouldBeALongPathAsWellToB || thisWouldBeALongPathAsWellToD == -1));
+        }
+    }
+
+    class Test
+    {
+        public int AVeryLongAccessorPathToA { get; set; }
+        public int AVeryLongAccessorPathToB { get; set; }
+        public int AVeryLongAccessorPathToC { get; set; }
+        public int AVeryLongAccessorPathToD { get; set; }
     }
 }

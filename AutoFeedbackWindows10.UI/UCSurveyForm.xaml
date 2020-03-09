@@ -5,12 +5,15 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:AutoFeedbackWindows10.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:valueconverters="using:AutoFeedbackWindows10.UI.ValueConverters"
     d:DesignHeight="720"
     d:DesignWidth="1080"
     mc:Ignorable="d">
 
     <Grid>
         <Grid.Resources>
+            <valueconverters:FeedbackChoiceConverter x:Key="fbc" />
+
             <Style TargetType="ListBox">
                 <Setter Property="Margin" Value="0,0,0,16" />
                 <Setter Property="SelectedIndex" Value="0" />
@@ -39,7 +42,7 @@
         </Grid.RowDefinitions>
         <StackPanel>
             <TextBlock Text="Sự đúng giờ của giáo viên trong giờ học" />
-            <ListBox>
+            <ListBox SelectedIndex="{Binding FeedbackChoice[0], Converter={StaticResource fbc}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                 <ListBoxItem>Luôn đúng giờ</ListBoxItem>
                 <ListBoxItem>Phần lớn đúng giờ</ListBoxItem>
                 <ListBoxItem>Ít khi đúng giờ</ListBoxItem>
@@ -47,7 +50,7 @@
             </ListBox>
 
             <TextBlock Text="Đảm bảo khối lượng môn học theo chương trình" />
-            <ListBox>
+            <ListBox SelectedIndex="{Binding FeedbackChoice[2], Converter={StaticResource fbc}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                 <ListBoxItem>
                     Đảm bảo hoàn toàn
                 </ListBoxItem>
@@ -63,7 +66,7 @@
             </ListBox>
 
             <TextBlock Text="Hỗ trợ của giáo viên trong và ngoài giờ - trả lời email, hướng dẫn thực hành, giải đáp thắc mắc…" TextWrapping="Wrap" />
-            <ListBox>
+            <ListBox SelectedIndex="{Binding FeedbackChoice[4], Converter={StaticResource fbc}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                 <ListBoxItem>
                     Rất tốt
                 </ListBoxItem>
@@ -80,7 +83,7 @@
         </StackPanel>
         <StackPanel Grid.Column="2">
             <TextBlock Text="Khả năng truyền đạt của giáo viên" />
-            <ListBox>
+            <ListBox SelectedIndex="{Binding FeedbackChoice[1], Converter={StaticResource fbc}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                 <ListBoxItem>
                     Rất dễ hiểu
                 </ListBoxItem>
@@ -90,7 +93,7 @@
             </ListBox>
 
             <TextBlock Text="Khả năng tạo không khí sôi nổi và gây hứng thú học tập cho học sinh của giáo viên" />
-            <ListBox>
+            <ListBox SelectedIndex="{Binding FeedbackChoice[3], Converter={StaticResource fbc}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                 <ListBoxItem>
                     Rất tốt
                 </ListBoxItem>
@@ -106,7 +109,7 @@
             </ListBox>
 
             <TextBlock Text="Thực hiện việc kiểm tra, chấm, trả, chữa bài cho học sinh" TextWrapping="Wrap" />
-            <ListBox>
+            <ListBox SelectedIndex="{Binding FeedbackChoice[5], Converter={StaticResource fbc}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                 <ListBoxItem>
                     Rất tốt
                 </ListBoxItem>
@@ -127,6 +130,6 @@
             Height="200"
             AcceptsReturn="True"
             PlaceholderText="Comment ..."
-            Text="Giáo viên rất nhiệt tình" />
+            Text="{Binding Comment, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, TargetNullValue='Giáo viên rất nhiệt tình'}" />
     </Grid>
 </UserControl>

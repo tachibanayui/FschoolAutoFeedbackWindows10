@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -10,13 +11,15 @@ namespace AutoFeedbackWindows10.UI.Models
     public class FeedbackTeacherModel : INotifyPropertyChanged
     {
         // Feedback info
-        public string TeacherName { get; set; }
-        public string FeedbackFor { get; set; }
-        public string Term { get; set; }
-        public string AcademicYear { get; set; }
-        public string ClassName { get; set; }
-        public string OpenDate { get; set; }
+        public string TeacherName { get; set; } = "All teachers";
+        public string FeedbackFor { get; set; } = "All feedback fors";
+        public string Term { get; set; } = "All terms";
+        public string AcademicYear { get; set; } = "All academic years";
+        public string ClassName { get; set; } = "All class names";
+        public string OpenDate { get; set; } = "All open dates";
+
         public string ID { get; set; }
+        public bool IsFeedback => ID.Contains("EditDoFeedback");
 
         // Feedback value number reflect the option and the value send for post request
         /*  ctl00$ContentPlaceHolder1$reload$ctl00$chkList: 4
@@ -28,16 +31,20 @@ namespace AutoFeedbackWindows10.UI.Models
             ctl00$ContentPlaceHolder1$txtComment: Giáo viên rất nhiệt tình
             ctl00$ContentPlaceHolder1$btSendFeedback: Gửi ý kiến
          */
-        public List<int> FeedbackChoice { get; set; }
-        public string Comment { get; set; }
+        
+        public List<int> FeedbackChoice { get; set; } = new List<int>() { 4, 4, 4, 4, 4, 4 };
+        public string Comment { get; set; } = "Giáo viên rất nhiệt tình";
 
 
         // View states
         [PropertyChanged.DoNotNotify]
+        [JsonIgnore]
         public string __ViewState { get; set; }
         [PropertyChanged.DoNotNotify]
+        [JsonIgnore]
         public string __VIEWSTATEGENERATOR { get; set; }
         [PropertyChanged.DoNotNotify]
+        [JsonIgnore]
         public string __EVENTVALIDATION { get; set; }  
 
         public event PropertyChangedEventHandler PropertyChanged;

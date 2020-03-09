@@ -30,6 +30,12 @@
                     Text="This page allow you to send the same feedback to each teacher simmilar to feedback normally"
                     TextWrapping="Wrap" />
 
+                <ProgressRing
+                    x:Name="prEntriesLoading"
+                    Grid.Row="1"
+                    Width="80"
+                    Height="80" />
+
                 <ListView
                     x:Name="lsvTeachers"
                     Grid.Row="1"
@@ -37,6 +43,12 @@
                     IsItemClickEnabled="True"
                     ItemClick="ListView_ItemClick"
                     ItemsSource="{x:Bind Teachers}">
+                    <ListView.ItemContainerTransitions>
+                        <TransitionCollection>
+                            <AddDeleteThemeTransition />
+                            <EntranceThemeTransition IsStaggeringEnabled="True" />
+                        </TransitionCollection>
+                    </ListView.ItemContainerTransitions>
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
