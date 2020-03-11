@@ -70,7 +70,7 @@ namespace AutoFeedbackWindows10.UI.DataProviders
             return StorageAccounts.Accounts.FirstOrDefault(x => x.Email == email);
         }
 
-        public static async Task<AccountModel> AddOrUpdateAccountAsync(string name, string email, string sessionID, Dictionary<string, string> cookies)
+        public static async Task<AccountModel> AddOrUpdateAccountAsync(string name, string email, string sessionID, List<CookieModel> cookies)
         {
             if (StorageAccounts == null)
             {
@@ -88,7 +88,7 @@ namespace AutoFeedbackWindows10.UI.DataProviders
             }
             else
             {
-                var item = new AccountModel() { SessionID = sessionID, Email = email, Name = name };
+                var item = new AccountModel() { SessionID = sessionID, Email = email, Name = name, Cookies = cookies };
                 StorageAccounts.Accounts.Add(item);
                 return item;
             }

@@ -1,5 +1,6 @@
 ﻿using AutoFeedbackWindows10.UI.DataProviders;
 using AutoFeedbackWindows10.UI.Models;
+using AutoFeedbackWindows10.UI.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -33,9 +35,10 @@ namespace AutoFeedbackWindows10.UI
 
         private Dictionary<String, Type> Pages { get; set; } = new Dictionary<string, Type>()
         {
-            ["Home"] = typeof(LoginForm),
+            ["Home"] = typeof(HomePage),
             ["Batch Feedback"] = typeof(BatchFeedbackPage),
-            ["Individual Feedback"] = typeof(IndividualFeedbackPage)
+            ["Individual Feedback"] = typeof(IndividualFeedbackPage),
+            ["Settings"] = typeof(SettingsPage),
         }; 
 
         public MainPage()
@@ -53,8 +56,29 @@ namespace AutoFeedbackWindows10.UI
         {
             if (Pages.ContainsKey(args.InvokedItem.ToString()))
             {
+                if(tutPointer != 0)
+                {
+                    if(args.InvokedItem.ToString() == "Batch Feedback" && tutPointer == 1)
+                    {
+                        navFrame.Navigate(typeof(BatchFeedbackPage), "Tut", args.RecommendedNavigationTransitionInfo);
+                    }
+                    else if(args.InvokedItem.ToString() == "Individual Feedback" && tutPointer == 2)
+                    {
+                        navFrame.Navigate(typeof(IndividualFeedbackPage), "Tut", args.RecommendedNavigationTransitionInfo);
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+
                 navFrame.Navigate(Pages[(string)args.InvokedItem], null, args.RecommendedNavigationTransitionInfo);
                 LastPageName = (string)args.InvokedItem;
+            }
+            else if (args.IsSettingsInvoked)
+            {
+                navFrame.Navigate(typeof(SettingsPage), null, args.RecommendedNavigationTransitionInfo);
+                LastPageName = "Settings";
             }
             else
             {
@@ -103,7 +127,7 @@ namespace AutoFeedbackWindows10.UI
         {
             foAccount.Hide();
             await AccountProvider.SetActiveAccountAsync(null);
-            Frame.Navigate(typeof(LoginForm), null, new DrillInNavigationTransitionInfo());
+            Frame.Navigate(typeof(LoginForm), CommonPageCommand.CannotGoBackLoginPage, new DrillInNavigationTransitionInfo());
         }
 
         private void AddAccount_Click(object sender, RoutedEventArgs e)
@@ -117,10 +141,118 @@ namespace AutoFeedbackWindows10.UI
             var allAccounts = await AccountProvider.GetAccounts();
             return allAccounts.Where(x => !x.Email.Contains(email));
         }
-
+        
         private async void SavedAccounts_Delete(object sender, ValueEventArgs<AccountModel> e)
         {
             await AccountProvider.RemoveAccountAsync(e.Value);
+        }
+
+        private static bool isAutoLogined;
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            if(!isAutoLogined)
+            {
+                // Auto-Login
+                isAutoLogined = true;
+                var activeAccount = await AccountProvider.GetActiveAccount();
+                if (activeAccount != null)
+                {
+                    prSigningIn.IsActive = true;
+                    LoginHelper.SetLoginCookies(activeAccount.Cookies);
+                    wvAutoLogin.Navigate(new Uri(LoginHelper.GoogleLoginLink));
+                }
+                else
+                {
+                    await Task.Delay(100);
+                    Frame.Navigate(typeof(LoginForm), CommonPageCommand.CannotGoBackLoginPage, new DrillInNavigationTransitionInfo());
+                }
+            }
+
+            // Show tutorial
+            if(string.IsNullOrEmpty(ApplicationData.Current.LocalSettings.Values["tut"]?.ToString()))
+            {
+                ttWelcomeTut.IsOpen = true;
+            }
+        }
+
+        private async void wvAutoLogin_NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
+        {
+            if (args.Uri.ToString().Contains($"{LoginHelper.FschoolDomain}/DefaultPage/StudentDefaultPage.aspx"))
+            {
+                args.Cancel = true;
+                string uriString = args.Uri.ToString();
+
+                string sessionID = LoginHelper.GetSessionID();
+                wvAutoLogin.Stop();
+
+                var cookies = LoginHelper.GetAndDeleteLoginCookie();
+
+                // We can kinda *guess* the email address by the student id
+                string email = uriString.Substring(uriString.IndexOf("=") + 1).Replace("#", "") + "@fpt.edu.vn";
+                string name = await AccountModel.GetAccountName(sessionID);
+
+                IsEnabled = true;
+                if (!string.IsNullOrEmpty(name))
+                {
+                    var createdAccount = await AccountProvider.AddOrUpdateAccountAsync(name, email, sessionID, cookies);
+                    await AccountProvider.SetActiveAccountAsync(createdAccount);
+                    txblLoginGranted.Text = $"Currently logged is as {name}";
+                    foLoginGranted.ShowAt(nviAccount, new FlyoutShowOptions() { Placement = FlyoutPlacementMode.Top });
+                }
+                else
+                {
+                    Frame.Navigate(typeof(LoginForm), CommonPageCommand.CannotGoBackLoginPage, new DrillInNavigationTransitionInfo());
+                }
+
+                prSigningIn.IsActive = false;
+            }
+        }
+
+        private void wvAutoLogin_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
+        {
+            Frame.Navigate(typeof(LoginForm), CommonPageCommand.CannotGoBackLoginPage, new DrillInNavigationTransitionInfo());
+        }
+
+
+
+
+        private void navRoot_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
+        {
+            Frame.GoBack();
+        }
+
+
+
+        private async void ttWelcomeTut_ActionButtonClick(Microsoft.UI.Xaml.Controls.TeachingTip sender, object args)
+        {
+            ttWelcomeTut.IsOpen = false;
+            await Task.Delay(1000);
+            tutPointer = 1;
+            ttBatchFeedbackIntro.IsOpen = true;
+        }
+
+        private void ttTutorial_CloseBtnClick(Microsoft.UI.Xaml.Controls.TeachingTip sender, object args)
+        {
+            ApplicationData.Current.LocalSettings.Values["tut"] = "Played or dismissed";
+        }
+
+        int tutPointer = 0;
+        private async void btnfbI_Click(object sender, RoutedEventArgs e)
+        {
+            tutPointer = 2;
+            ttBatchFeedbackIntro.IsOpen = false;
+            await Task.Delay(1000);
+            ttIndividualFeedbackIntro.IsOpen = true;
+        }
+
+        private async void btnfbB_Click(object sender, RoutedEventArgs e)
+        {
+            tutPointer = 1;
+            ttIndividualFeedbackIntro.IsOpen = false;
+            await Task.Delay(1000);
+            ttBatchFeedbackIntro.IsOpen = true;
         }
     }
 }

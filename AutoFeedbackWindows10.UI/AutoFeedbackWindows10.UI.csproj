@@ -143,14 +143,20 @@
     <Compile Include="Models\AccountStorageModel.cs" />
     <Compile Include="Models\BatchedFeedbackModel.cs" />
     <Compile Include="Models\ContributorModel.cs" />
+    <Compile Include="Models\CookieModel.cs" />
+    <Compile Include="Models\FeatureModel.cs" />
     <Compile Include="Models\FeedbackTeacherModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SettingsPage.xaml.cs">
+      <DependentUpon>SettingsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UCSavedLogin.xaml.cs">
       <DependentUpon>UCSavedLogin.xaml</DependentUpon>
     </Compile>
     <Compile Include="UCSurveyForm.xaml.cs">
       <DependentUpon>UCSurveyForm.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils\CommonPageCommand.cs" />
     <Compile Include="Utils\InvalidSessionIDException.cs" />
     <Compile Include="Utils\LatinEncodingHelper.cs" />
     <Compile Include="Utils\LoginHelper.cs" />
@@ -163,7 +169,9 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Images\BatchedFeedbackImg.png" />
     <Content Include="Assets\Images\FPTUBG.jpg" />
+    <Content Include="Assets\Images\IndividualFeedbackImg.png" />
     <Content Include="Assets\Images\LoginBackground.jpg" />
     <Content Include="Assets\Images\SpaceBackground.jpg" />
     <Content Include="Properties\Default.rd.xml" />
@@ -204,6 +212,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="SettingsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UCSavedLogin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -228,6 +240,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Animations">
       <Version>6.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.UI.Xaml">
+      <Version>2.3.200213001</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.3</Version>

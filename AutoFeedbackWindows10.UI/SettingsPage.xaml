@@ -1,0 +1,108 @@
+﻿<Page
+    x:Class="AutoFeedbackWindows10.UI.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:AutoFeedbackWindows10.UI"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="pageRoot"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    mc:Ignorable="d">
+    <ScrollViewer Margin="12" IsHorizontalRailEnabled="False">
+        <StackPanel x:Name="layoutRoot" Orientation="Vertical">
+            <StackPanel
+                x:Name="pnlSettings"
+                MinWidth="500"
+                MinHeight="500">
+                <TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="Settings" />
+                <TextBlock
+                    Margin="0,24,0,0"
+                    Style="{ThemeResource SubheaderTextBlockStyle}"
+                    Text="Color theme" />
+                <RadioButton
+                    x:Name="rbLight"
+                    Margin="0,12,0,0"
+                    Checked="rbThemes_Checked"
+                    Content="Light (experimental)" />
+                <RadioButton
+                    x:Name="rbDark"
+                    Checked="rbThemes_Checked"
+                    Content="Dark" />
+                <RadioButton
+                    x:Name="rbSys"
+                    Checked="rbThemes_Checked"
+                    Content="Use system theme (experimental)" />
+                <TextBlock
+                    Margin="0,24,0,0"
+                    Style="{ThemeResource SubheaderTextBlockStyle}"
+                    Text="Updates" />
+                <Button Margin="0,12,0,0" Content="Check for updates" />
+                <Button Margin="0,12,0,0" Content="Replay tutorial" />
+                <Button
+                    Margin="0,12,0,0"
+                    Click="btnSumbit_Click"
+                    Content="Submit an issue or feature" />
+                <Button Margin="0,12,0,0" Click="btnGithub_Click">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        <!--  Github icon  -->
+                        <PathIcon Data="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+                        <TextBlock
+                            Grid.Column="2"
+                            VerticalAlignment="Top"
+                            Text="Give us a star" />
+                    </Grid>
+                </Button>
+            </StackPanel>
+
+            <StackPanel x:Name="pnlAbout" Grid.Row="2">
+                <TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="About Fschool auto feedback" />
+                <TextBlock
+                    Margin="8,12,8,8"
+                    HorizontalAlignment="Left"
+                    FontSize="20"
+                    FontWeight="Light"
+                    TextWrapping="Wrap">
+                    <Run Text="I think all of fschooler know how frustrated to feedback every teacher?" />
+                    <Run Text="Not only it repetitive, but also it takes forever to just wait for the website to load" />
+                    <LineBreak />
+                    <Run Text="Sure, it's only take 30 minutes to take feedback, but in 30 minutes we can do other *activities*." />
+                    <Run Text="Time is precious in fpt campus and I want to practice the new framework too, that why auto feedback project is created" />
+                    <LineBreak />
+                    <LineBreak />
+                    <Run FontSize="24" Text="So why do you need to feedback teachers?" />
+                    <LineBreak />
+                    <Run Text="Good question :). Firstly, take feedback is required in our school every term." />
+                    <Run Text="Secondly, the school website will not show grades if we don't don't feedback" />
+                    <Bold>all</Bold>
+                    <Run Text="teachers" />
+                    <LineBreak />
+                    <Run Text="That's why I started working on Fschool auto feedback and release the first version after 5 hour." />
+                    <Run Text="I need to release it so quickly because we were aproaching the end of the term." />
+                    <Run Text="Fschool auto feedback first release only contains batched feedback feature, everything is displayed in a single page" />
+                    <Run Text="and relies on chrome web driver to feedback. But I realize it both slow and not everyone use chrome so I need to make it better." />
+                    <LineBreak />
+                    <Run Text="Fast forward to march, when Corona virus spread rapidly throughout the world, All student in Vietnam are allow to stay at home" />
+                    <Run Text="and my team project - minecraft minigame dev :), were abondant at the time so I decided to revisit this project. This time, I" />
+                    <Run Text="reversed engineer fschool.fpt.edu.vn and this time I only use http request which is much faster than a web driver. One of" />
+                    <Run Text="my test show that to feedback 100 teacher using web driver will takes 10-15 minutes, but using the new version it only takes" />
+                    <Run Text="15-30 seconds which is a huge speed boost" />
+                    <LineBreak />
+                    <Run Text="Finally, I decided to add more feature so a new UI is a must. I also learned a new UI framework, that is the main reason this" />
+                    <Run Text="program have a new look and have a new name Fschool auto feedback windows 10 edition. This version only work on windows 10." />
+                    <Run Text="And the old version does work with lower versions of windows but I no longer maintain it but you can find both version on" />
+                    <Run Text="my github page" />
+                    <LineBreak />
+                    <LineBreak />
+                    <Run Text="To create this program took a lot of time and effort to research and develop. Please consider give this project a star, " />
+                    <Run Text="share it to your friends to help them feedback faster and give the motivation to continue maintain this program. Thank" />
+                    <Run Text="you for using Fschool auto feedback windows 10 edition" />
+                </TextBlock>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

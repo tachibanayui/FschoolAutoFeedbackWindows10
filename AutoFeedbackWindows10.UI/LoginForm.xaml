@@ -30,6 +30,7 @@
             Stretch="UniformToFill" />
 
         <Button
+            x:Name="btnGoBack"
             Margin="8"
             VerticalAlignment="Top"
             Background="Transparent"
@@ -99,7 +100,7 @@
             Background="White"
             CornerRadius="8,8,0,0"
             Opacity="0">
-            <Grid RequestedTheme="Light" Margin="8">
+            <Grid Margin="8" RequestedTheme="Light">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />

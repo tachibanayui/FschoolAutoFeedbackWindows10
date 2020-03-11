@@ -22,7 +22,7 @@ namespace AutoFeedbackWindows10.UI.Models
         // General and login info
         public string Email { get; set; }
         public string SessionID { get; set; }
-        public Dictionary<string, string> Cookies { get; set; }
+        public List<CookieModel> Cookies { get; set; }
 
         // Personal Profile
         public string Name { get; set; }

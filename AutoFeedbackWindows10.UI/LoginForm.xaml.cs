@@ -1,5 +1,6 @@
 ﻿using AutoFeedbackWindows10.UI.DataProviders;
 using AutoFeedbackWindows10.UI.Models;
+using AutoFeedbackWindows10.UI.Utils;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
@@ -52,6 +53,9 @@ namespace AutoFeedbackWindows10.UI
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            if ((string)e.Parameter == CommonPageCommand.CannotGoBackLoginPage)
+                btnGoBack.Visibility = Visibility.Collapsed;
+
             webLogin.Navigate(new Uri(GoogleLoginLink));
             savedLogin.SetAccountPool(await AccountProvider.GetAccounts());
         }
@@ -62,9 +66,10 @@ namespace AutoFeedbackWindows10.UI
             {
                 args.Cancel = true;
                 string uriString = args.Uri.ToString();
+                webLogin.Stop();
 
                 string sessionID = httpBase.CookieManager.GetCookies(new Uri(FschoolDomain)).FirstOrDefault(x => x.Name == SessionIDCookieName).Value;
-                Dictionary<string, string> cookies = GetAndDeleteLoginCookie();
+                var cookies = LoginHelper.GetAndDeleteLoginCookie();
 
                 // We can kinda *guess* the email address by the student id
                 string email = uriString.Substring(uriString.IndexOf("=") + 1).Replace("#", "") + "@fpt.edu.vn";
@@ -83,32 +88,13 @@ namespace AutoFeedbackWindows10.UI
                         CloseButtonText = "OK"
                     };
                     await failedToLoginDialog.ShowAsync();
-                    GetAndDeleteLoginCookie();
+                    LoginHelper.GetAndDeleteLoginCookie();
                     webLogin.Navigate(new Uri(GoogleLoginLink));
                 }
             }
         }
 
-        private Dictionary<string, string> GetAndDeleteLoginCookie()
-        {
-            Dictionary<string, string> cookies = new Dictionary<string, string>();
-            foreach (var item in httpBase.CookieManager.GetCookies(new Uri(GoogleAccountDomain)))
-            {
-                cookies.Add(item.Name, item.Value);
-                httpBase.CookieManager.DeleteCookie(item);
-            }
-
-            return cookies;
-        }
-
-        // TODO: Fix method can't set cookies
-        private void SetLoginCookies(Dictionary<string,string> cookies)
-        {
-            foreach (var item in cookies)
-            {
-                httpBase.CookieManager.SetCookie(new HttpCookie(item.Key, GoogleAccountDomain, "/") { Value = item.Value });
-            }
-        }
+        
 
         private void Github_Click(object sender, RoutedEventArgs e) => Process.Start("https://github.com/quangaming2929/FschoolAutoFeedbackWindows10");
 
@@ -127,8 +113,8 @@ namespace AutoFeedbackWindows10.UI
         {
             if(e.Value.Cookies != null)
             {
-                GetAndDeleteLoginCookie();
-                SetLoginCookies(e.Value.Cookies);
+                LoginHelper.GetAndDeleteLoginCookie();
+                LoginHelper.SetLoginCookies(e.Value.Cookies);
                 webLogin.Navigate(new Uri(GoogleLoginLink));
             }
         }

@@ -2,6 +2,7 @@
     x:Class="AutoFeedbackWindows10.UI.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:AutoFeedbackWindows10.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -98,32 +99,131 @@
                 </Grid>
             </Grid>
         </Flyout>
-    </Page.Resources>
-    <NavigationView x:Name="navRoot" ItemInvoked="navRoot_ItemInvoked">
-        <NavigationView.MenuItems>
-            <NavigationViewItem Content="Home" Icon="Home" />
-            <NavigationViewItem Content="Batch Feedback">
-                <NavigationViewItem.Icon>
-                    <FontIcon Glyph="&#xECA5;" />
-                </NavigationViewItem.Icon>
-            </NavigationViewItem>
-            <NavigationViewItem Content="Individual Feedback" Icon="AllApps" />
-        </NavigationView.MenuItems>
+        <Flyout x:Name="foLoginGranted">
+            <Grid Margin="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <FontIcon
+                    Grid.RowSpan="2"
+                    FontSize="20"
+                    Glyph="&#xE8FB;" />
+                <TextBlock
+                    Grid.Column="2"
+                    Style="{StaticResource BaseTextBlockStyle}"
+                    Text="Login completed" />
+                <TextBlock
+                    x:Name="txblLoginGranted"
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    Margin="0,4,0,0"
+                    Style="{StaticResource BodyTextBlockStyle}" />
+            </Grid>
+        </Flyout>
 
-        <NavigationView.PaneFooter>
-            <StackPanel>
+        <controls:TeachingTip
+            x:Name="ttWelcomeTut"
+            Title="Tutorial"
+            ActionButtonClick="ttWelcomeTut_ActionButtonClick"
+            ActionButtonContent="Let's go"
+            CloseButtonClick="ttTutorial_CloseBtnClick"
+            CloseButtonContent="No thanks"
+            PreferredPlacement="RightTop"
+            Subtitle="Hi, you seem new here. Do you want to have a quick tour through this app?">
+            <controls:TeachingTip.IconSource>
+                <controls:FontIconSource Glyph="&#xE7BE;" />
+            </controls:TeachingTip.IconSource>
+        </controls:TeachingTip>
+
+        <controls:TeachingTip
+            x:Name="ttIndividualFeedbackIntro"
+            Title="Indiviudal feedback"
+            CloseButtonClick="ttTutorial_CloseBtnClick"
+            PreferredPlacement="RightBottom"
+            Subtitle="This is a feature allow you to feedback normally like in the offical website"
+            Target="{Binding ElementName=nviIndividual}">
+            <controls:TeachingTip.IconSource>
+                <controls:FontIconSource Glyph="&#xE71D;" />
+            </controls:TeachingTip.IconSource>
+            <Button
+                Margin="4"
+                HorizontalAlignment="Right"
+                Click="btnfbB_Click"
+                Content="I prefer feedback in batch" />
+        </controls:TeachingTip>
+
+        <controls:TeachingTip
+            x:Name="ttBatchFeedbackIntro"
+            Title="Batched feedback"
+            CloseButtonClick="ttTutorial_CloseBtnClick"
+            PreferredPlacement="RightBottom"
+            Subtitle="This is a feature allow you to quickly feedback to selected teachers"
+            Target="{Binding ElementName=nviBatched}">
+            <controls:TeachingTip.IconSource>
+                <controls:FontIconSource Glyph="&#xECA5;" />
+            </controls:TeachingTip.IconSource>
+            <Button
+                Margin="4"
+                HorizontalAlignment="Right"
+                Click="btnfbI_Click"
+                Content="I prefer feedback indiviually" />
+        </controls:TeachingTip>
+
+
+    </Page.Resources>
+    <Grid>
+        <WebView
+            x:Name="wvAutoLogin"
+            NavigationCompleted="wvAutoLogin_NavigationCompleted"
+            NavigationStarting="wvAutoLogin_NavigationStarting" />
+        <NavigationView
+            x:Name="navRoot"
+            BackRequested="navRoot_BackRequested"
+            IsBackEnabled="True"
+            ItemInvoked="navRoot_ItemInvoked">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="Home" Icon="Home" />
+                <NavigationViewItem x:Name="nviBatched" Content="Batch Feedback">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xECA5;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+
                 <NavigationViewItem
-                    Content="Account"
-                    Icon="Contact"
-                    Tapped="Account_Tapped" />
-            </StackPanel>
-        </NavigationView.PaneFooter>
-        <Frame x:Name="navFrame">
-            <Frame.ContentTransitions>
-                <TransitionCollection>
-                    <NavigationThemeTransition />
-                </TransitionCollection>
-            </Frame.ContentTransitions>
-        </Frame>
-    </NavigationView>
+                    x:Name="nviIndividual"
+                    Content="Individual Feedback"
+                    Icon="AllApps" />
+            </NavigationView.MenuItems>
+
+            <NavigationView.PaneFooter>
+                <StackPanel>
+                    <Grid>
+                        <NavigationViewItem
+                            x:Name="nviAccount"
+                            Content="Account"
+                            Icon="Contact"
+                            Tapped="Account_Tapped" />
+                        <ProgressRing
+                            x:Name="prSigningIn"
+                            Margin="0,0,12,0"
+                            HorizontalAlignment="Right"
+                            Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />
+                    </Grid>
+                </StackPanel>
+            </NavigationView.PaneFooter>
+            <Frame x:Name="navFrame">
+                <Frame.ContentTransitions>
+                    <TransitionCollection>
+                        <NavigationThemeTransition />
+                    </TransitionCollection>
+                </Frame.ContentTransitions>
+            </Frame>
+        </NavigationView>
+    </Grid>
 </Page>

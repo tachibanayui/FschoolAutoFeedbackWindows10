@@ -10,6 +10,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -36,6 +37,7 @@ namespace AutoFeedbackWindows10.UI
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+            
             AccountProvider.ActiveAccountChanged += AccountProvider_ActiveAccountChanged;
         }
 
@@ -72,6 +74,25 @@ namespace AutoFeedbackWindows10.UI
                 Window.Current.Content = rootFrame;
             }
 
+            // Set theme for our app
+            switch (ApplicationData.Current.LocalSettings.Values["theme"]?.ToString())
+            {
+                case "1":
+                    rootFrame.RequestedTheme = ElementTheme.Light;
+                    break;
+                case "2":
+                    rootFrame.RequestedTheme = ElementTheme.Dark;
+                    break;
+                case "0":
+                    rootFrame.RequestedTheme = ElementTheme.Default;
+                    break;
+                default: // Our default theme is dark
+                    rootFrame.RequestedTheme = ElementTheme.Dark;
+                    ApplicationData.Current.LocalSettings.Values["theme"] = "2";
+                    break;
+
+            }
+
             if (e.PrelaunchActivated == false)
             {
                 if (rootFrame.Content == null)
@@ -79,8 +100,9 @@ namespace AutoFeedbackWindows10.UI
                     // When the navigation stack isn't restored navigate to the first page,
                     // configuring the new page by passing required information as a navigation
                     // parameter
-                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                    rootFrame.Navigate(typeof(MainPage), "AutoLogin");
                 }
+
                 // Ensure the current window is active
                 Window.Current.Activate();
             }
