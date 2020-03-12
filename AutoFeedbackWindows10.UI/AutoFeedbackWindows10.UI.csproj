@@ -160,6 +160,8 @@
     <Compile Include="Utils\InvalidSessionIDException.cs" />
     <Compile Include="Utils\LatinEncodingHelper.cs" />
     <Compile Include="Utils\LoginHelper.cs" />
+    <Compile Include="Utils\MockDataProviders.cs" />
+    <Compile Include="Utils\VisualTreeHelper.cs" />
     <Compile Include="ValueConverters\FeedbackChoiceConverter.cs" />
     <Compile Include="ValueEventArgs.cs" />
   </ItemGroup>
@@ -170,10 +172,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Images\BatchedFeedbackImg.png" />
+    <Content Include="Assets\Images\FilterTutorialImage.png" />
     <Content Include="Assets\Images\FPTUBG.jpg" />
     <Content Include="Assets\Images\IndividualFeedbackImg.png" />
     <Content Include="Assets\Images\LoginBackground.jpg" />
     <Content Include="Assets\Images\SpaceBackground.jpg" />
+    <Content Include="Assets\Images\TeachersTutorialImage.png" />
+    <Content Include="Assets\Images\TutorialFinishedImage.jpg" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />

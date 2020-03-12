@@ -60,10 +60,12 @@ namespace AutoFeedbackWindows10.UI
                 {
                     if(args.InvokedItem.ToString() == "Batch Feedback" && tutPointer == 1)
                     {
+                        ttBatchFeedbackIntro.IsOpen = false;
                         navFrame.Navigate(typeof(BatchFeedbackPage), "Tut", args.RecommendedNavigationTransitionInfo);
                     }
                     else if(args.InvokedItem.ToString() == "Individual Feedback" && tutPointer == 2)
                     {
+                        ttIndividualFeedbackIntro.IsOpen = false;
                         navFrame.Navigate(typeof(IndividualFeedbackPage), "Tut", args.RecommendedNavigationTransitionInfo);
                     }
                     else
@@ -71,9 +73,11 @@ namespace AutoFeedbackWindows10.UI
                         return;
                     }
                 }
-
-                navFrame.Navigate(Pages[(string)args.InvokedItem], null, args.RecommendedNavigationTransitionInfo);
-                LastPageName = (string)args.InvokedItem;
+                else
+                {
+                    navFrame.Navigate(Pages[(string)args.InvokedItem], null, args.RecommendedNavigationTransitionInfo);
+                    LastPageName = (string)args.InvokedItem;
+                }
             }
             else if (args.IsSettingsInvoked)
             {
@@ -171,7 +175,7 @@ namespace AutoFeedbackWindows10.UI
             }
 
             // Show tutorial
-            if(string.IsNullOrEmpty(ApplicationData.Current.LocalSettings.Values["tut"]?.ToString()))
+            if(string.IsNullOrEmpty(ApplicationData.Current.LocalSettings.Values["tut"]?.ToString()) || true) // test code
             {
                 ttWelcomeTut.IsOpen = true;
             }
@@ -247,12 +251,23 @@ namespace AutoFeedbackWindows10.UI
             ttIndividualFeedbackIntro.IsOpen = true;
         }
 
-        private async void btnfbB_Click(object sender, RoutedEventArgs e)
+        private void btnfbB_Click(object sender, RoutedEventArgs e)
         {
-            tutPointer = 1;
-            ttIndividualFeedbackIntro.IsOpen = false;
-            await Task.Delay(1000);
-            ttBatchFeedbackIntro.IsOpen = true;
+            // TODO: Implement individual tutorial before uncomment this code
+
+            //tutPointer = 1;
+            //ttIndividualFeedbackIntro.IsOpen = false;
+            //await Task.Delay(1000);
+            //ttBatchFeedbackIntro.IsOpen = true;
+        }
+
+        public void TutorialStepDone()
+        {
+            // Calcualte the next step here, but for now we only have 1 step so we just show the tutorial finish tips
+            ttTutFinished.IsOpen = true;
+            navFrame.Navigate(typeof(HomePage));
+            tutPointer = 0;
+            ApplicationData.Current.LocalSettings.Values["tut"] = "Played or dismissed";
         }
     }
 }

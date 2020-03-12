@@ -174,7 +174,20 @@
                 Click="btnfbI_Click"
                 Content="I prefer feedback indiviually" />
         </controls:TeachingTip>
-
+        <controls:TeachingTip
+            x:Name="ttTutFinished"
+            Title="Tutorial finished"
+            HeroContentPlacement="Top"
+            IsLightDismissEnabled="True"
+            PreferredPlacement="BottomRight"
+            Subtitle="That is all the basics of this apps, the rest is up to you to discover, thanks for using Fschool auto feedback windows 10 editon">
+            <controls:TeachingTip.IconSource>
+                <controls:FontIconSource Glyph="&#xE8FB;" />
+            </controls:TeachingTip.IconSource>
+            <controls:TeachingTip.HeroContent>
+                <Image Source="/Assets/Images/TutorialFinishedImage.jpg" />
+            </controls:TeachingTip.HeroContent>
+        </controls:TeachingTip>
 
     </Page.Resources>
     <Grid>

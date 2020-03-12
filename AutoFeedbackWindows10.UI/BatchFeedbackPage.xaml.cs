@@ -1,5 +1,6 @@
 ﻿using AutoFeedbackWindows10.UI.DataProviders;
 using AutoFeedbackWindows10.UI.Models;
+using AutoFeedbackWindows10.UI.Utils;
 using Microsoft.Toolkit.Uwp.UI.Animations.Expressions;
 using PropertyChanged;
 using System;
@@ -186,7 +187,7 @@ namespace AutoFeedbackWindows10.UI
         private async Task FetchTeachers()
         {
             IsLoading = true;
-            CurrentBatch.Teachers = await Provider.GetFeedbackEntries();
+            CurrentBatch.Teachers = isTutorialPlaying ? MockDataProviders.GetBatchedMockTeachers() : await Provider.GetFeedbackEntries();
             IsLoading = false;
             Bindings.Update();
         }
@@ -225,33 +226,44 @@ namespace AutoFeedbackWindows10.UI
         #region Feedback sending
         private async void btnSend_Click(SplitButton sender, SplitButtonClickEventArgs args)
         {
-            IsEnabled = false;
-            IsLoading = true;
-
-            await Task.Run(async () =>
+            if(isTutorialPlaying)
             {
-                // Figure out who will be feedbacked
-                if (CurrentBatch.Teachers.Count == 0)  // If user didn't load teachers we gonna 
+                var root = VisualTreeHelperUtils.FindParent<MainPage>(this);
+                if(root != null)
                 {
-                    CurrentBatch.Teachers = await Provider.GetFeedbackEntries();
+                    root.TutorialStepDone();
                 }
+            }
+            else
+            {
+                IsEnabled = false;
+                IsLoading = true;
 
-                var filtered = await GetFilteredTeacher();
-                var includedTeacher = filtered.Where(x => !CurrentBatch.ExcludeTeachers.Any(p => p.ID == x.ID)).Select(x => SendFeedback(x)).ToList();
-
-                int count = includedTeacher.Count;
-                int ftcount = 0;
-                while (includedTeacher.Count() > 0)
+                await Task.Run(async () =>
                 {
-                    var finishedTask = await Task.WhenAny(includedTeacher);
-                    ftcount++;
-                    await Dispatcher.RunIdleAsync(x => FBStatusCount = $"{ftcount}/{count}");
-                    includedTeacher.Remove(finishedTask);
-                }
-            });
+                    // Figure out who will be feedbacked
+                    if (CurrentBatch.Teachers.Count == 0)  // If user didn't load teachers we gonna 
+                    {
+                        CurrentBatch.Teachers = await Provider.GetFeedbackEntries();
+                    }
 
-            IsEnabled = true;
-            IsLoading = false;
+                    var filtered = await GetFilteredTeacher();
+                    var includedTeacher = filtered.Where(x => !CurrentBatch.ExcludeTeachers.Any(p => p.ID == x.ID)).Select(x => SendFeedback(x)).ToList();
+
+                    int count = includedTeacher.Count;
+                    int ftcount = 0;
+                    while (includedTeacher.Count() > 0)
+                    {
+                        var finishedTask = await Task.WhenAny(includedTeacher);
+                        ftcount++;
+                        await Dispatcher.RunIdleAsync(x => FBStatusCount = $"{ftcount}/{count}");
+                        includedTeacher.Remove(finishedTask);
+                    }
+                });
+
+                IsEnabled = true;
+                IsLoading = false;
+            }
         }
 
         private async Task SendFeedback(FeedbackTeacherModel item)
@@ -268,28 +280,48 @@ namespace AutoFeedbackWindows10.UI
         {
             base.OnNavigatedTo(e);
 
-            if (Drafts.Count == 0)
-                Drafts.Add(new BatchedFeedbackModel() { FeedbackerAccountEmail = Provider.CurrentAccount.Email });
+            if(e.Parameter?.ToString() == "Tut")
+            {
+                isTutorialPlaying = true;
+                CurrentBatch = new BatchedFeedbackModel();
+                LoadTeacherTask = FetchTeachers().ContinueWith(x => UpdateIncludedTeacher());
 
-            CurrentBatch = Drafts.Last(x => x.FeedbackerAccountEmail == Provider.CurrentAccount.Email);
-            LoadTeacherTask = FetchTeachers().ContinueWith(x => UpdateIncludedTeacher());
-            await Task.Delay(1000);
-            await LoadTeacherTask;
-            FBStatusCount = IncludedTeachers.Count.ToString();
-            DataContext = this;
+                FBStatusCount = IncludedTeachers.Count.ToString();
+                DataContext = this;
+
+                await Task.Delay(500);
+                ttForms.IsOpen = true;
+            }
+            else
+            {
+                if (Drafts.Count == 0)
+                    Drafts.Add(new BatchedFeedbackModel() { FeedbackerAccountEmail = Provider.CurrentAccount.Email });
+
+                CurrentBatch = Drafts.Last(x => x.FeedbackerAccountEmail == Provider.CurrentAccount.Email);
+                LoadTeacherTask = FetchTeachers().ContinueWith(x => UpdateIncludedTeacher());
+                await Task.Delay(1000);
+                await LoadTeacherTask;
+                FBStatusCount = IncludedTeachers.Count.ToString();
+                DataContext = this;
+            }
         }
 
-        private async void Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e) 
         {
-            if(pivotRoot.SelectedIndex == 2 || pivotRoot.SelectedIndex == 1)
+            if(pivotRoot.SelectedIndex == 2)
             {
                 // Get feedback entries
                 await LoadTeacherTask;
+                await UpdateIncludedTeacher();
+                if (!teacherIntroPlayed && isTutorialPlaying)
+                    ttTeachers.IsOpen = true;
+            }
+            else if (pivotRoot.SelectedIndex == 1)
+            {
+                await LoadTeacherTask;
 
-                if(pivotRoot.SelectedIndex == 2)
-                {
-                    await UpdateIncludedTeacher();
-                }
+                if (!filterIntroPlayed && isTutorialPlaying)
+                    ttFilter.IsOpen = true;
             }
         }
 
@@ -300,5 +332,34 @@ namespace AutoFeedbackWindows10.UI
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        #region Tutorials
+        bool isTutorialPlaying;
+        bool formIntroPlayed;
+        bool filterIntroPlayed;
+        bool teacherIntroPlayed;
+
+        private async void ttForms_Closed(Microsoft.UI.Xaml.Controls.TeachingTip sender, Microsoft.UI.Xaml.Controls.TeachingTipClosedEventArgs args)
+        {
+            formIntroPlayed = true;
+            await Task.Delay(1000);
+            ttIntroduction.IsOpen = true;
+        }
+
+        private async void ttFilter_Closed(Microsoft.UI.Xaml.Controls.TeachingTip sender, Microsoft.UI.Xaml.Controls.TeachingTipClosedEventArgs args)
+        {
+            filterIntroPlayed = true;
+            await Task.Delay(1000);
+            ttIntroduction.IsOpen = true;
+        }
+
+        private async void ttTeachers_Closed(Microsoft.UI.Xaml.Controls.TeachingTip sender, Microsoft.UI.Xaml.Controls.TeachingTipClosedEventArgs args)
+        {
+            teacherIntroPlayed = true;
+            await Task.Delay(1000);
+            ttIntroduction.IsOpen = true;
+        }
+        #endregion
+
     }
 }

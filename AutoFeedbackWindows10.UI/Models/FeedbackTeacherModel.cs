@@ -18,7 +18,7 @@ namespace AutoFeedbackWindows10.UI.Models
         public string ClassName { get; set; } = "All class names";
         public string OpenDate { get; set; } = "All open dates";
 
-        public string ID { get; set; }
+        public string ID { get; set; } = string.Empty;
         public bool IsFeedback => ID.Contains("EditDoFeedback");
 
         // Feedback value number reflect the option and the value send for post request

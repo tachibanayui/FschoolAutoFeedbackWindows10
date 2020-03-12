@@ -2,6 +2,7 @@
     x:Class="AutoFeedbackWindows10.UI.BatchFeedbackPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:AutoFeedbackWindows10.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -105,6 +106,62 @@
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
         </MenuFlyout>
+
+        <controls:TeachingTip
+            x:Name="ttIntroduction"
+            Title="Batched feedback"
+            IsLightDismissEnabled="True"
+            PreferredPlacement="TopRight"
+            Subtitle="Mess around with it then check out to other tabs (Forms, Filter, Teachers) to continue. Hit send button to end this tutorial"
+            Target="{Binding ElementName=pivotRoot}">
+            <controls:TeachingTip.IconSource>
+                <controls:FontIconSource Glyph="&#xECA5;" />
+            </controls:TeachingTip.IconSource>
+        </controls:TeachingTip>
+
+        <controls:TeachingTip
+            x:Name="ttForms"
+            Title="Feedback forms"
+            Closed="ttForms_Closed"
+            IsLightDismissEnabled="True"
+            PreferredPlacement="BottomRight"
+            Subtitle="This is a forms to write your feedback, it defaults to give all teachers the best feedback but you can change it to whatever you want">
+            <controls:TeachingTip.IconSource>
+                <controls:FontIconSource Glyph="&#xE8A1;" />
+            </controls:TeachingTip.IconSource>
+        </controls:TeachingTip>
+
+        <controls:TeachingTip
+            x:Name="ttFilter"
+            Title="Feedback filters"
+            Closed="ttFilter_Closed"
+            HeroContentPlacement="Bottom"
+            IsLightDismissEnabled="True"
+            PreferredPlacement="BottomRight"
+            Subtitle="This is where you can filter who will be feedback, for example you only want to feedback for any teacher who teaching in first term 2020">
+            <controls:TeachingTip.IconSource>
+                <controls:FontIconSource Glyph="&#xE71C;" />
+            </controls:TeachingTip.IconSource>
+            <controls:TeachingTip.HeroContent>
+                <Image Source="/Assets/Images/FilterTutorialImage.png" />
+            </controls:TeachingTip.HeroContent>
+        </controls:TeachingTip>
+
+        <controls:TeachingTip
+            x:Name="ttTeachers"
+            Title="Feedback teachers"
+            Closed="ttTeachers_Closed"
+            HeroContentPlacement="Bottom"
+            IsLightDismissEnabled="True"
+            PreferredPlacement="BottomRight"
+            Subtitle="This is where you can see who will be feedback in detail, you can exclude each teacher if you desire by drag and drop them. Click option to see more feature available">
+            <controls:TeachingTip.IconSource>
+                <controls:FontIconSource Glyph="&#xF7ED;" />
+            </controls:TeachingTip.IconSource>
+            <controls:TeachingTip.HeroContent>
+                <Image Source="/Assets/Images/TeachersTutorialImage.png" />
+            </controls:TeachingTip.HeroContent>
+        </controls:TeachingTip>
     </Page.Resources>
     <Grid>
         <ScrollViewer x:Name="scrollRoot" ViewChanged="scrollRoot_ViewChanged">
